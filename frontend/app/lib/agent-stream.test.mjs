@@ -262,8 +262,9 @@ test("visible labels are user-facing and do not include private internal strings
   assert.equal(stageLabel("UnderstandQuestion"), "理解问题");
   assert.equal(stageLabel("RetrieveKnowledgeBase"), "检索知识库");
   assert.equal(stageLabel("ReadEvidence"), "引用文档");
-  assert.equal(stageLabel("SynthesizeAnswer"), "思考");
+  assert.equal(stageLabel("SynthesizeAnswer"), "组织答案");
   assert.equal(stageLabel("Complete"), "完成");
+  assert.equal(toolLabel("thinking"), "记录证据判断");
   assert.equal(toolLabel("RawRAGTool"), "检索知识库");
   assert.equal(toolLabel("KeywordSearchTool"), "搜索关键词");
   assert.equal(toolLabel("GraphRetrieverTool"), "查询图谱证据");
