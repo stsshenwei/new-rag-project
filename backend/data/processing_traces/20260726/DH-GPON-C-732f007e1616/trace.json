@@ -1,0 +1,254 @@
+{
+  "doc_id": "5dd14487656310163520dbcb70fefbb6",
+  "duration_ms": 12424,
+  "ended_at": "2026-07-26T08:06:27.028Z",
+  "error": null,
+  "file_name": "DH-GPON-C.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 472,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-2d981c1752794d7a89b7967909d1f5c0/DH-GPON-C.txt",
+  "spans": [
+    {
+      "_db_span_id": "0aa7fc14b717476c9241dabae41d7c0a",
+      "duration_ms": 54,
+      "ended_at": "2026-07-26T08:06:14.745Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-GPON-C.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 472,
+        "source": "uploads/upload-2d981c1752794d7a89b7967909d1f5c0/DH-GPON-C.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 256,
+        "doc_id": "5dd14487656310163520dbcb70fefbb6",
+        "document_metadata": {},
+        "elements": 29,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 4,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "8c48dad3d5d144ce9634bc0ba9f61cf1",
+      "started_at": "2026-07-26T08:06:14.690Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "02ec0c42517849c1b4fa061f6619e441",
+      "duration_ms": 61,
+      "ended_at": "2026-07-26T08:06:14.816Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 2
+        },
+        "by_type": {
+          "child": 1,
+          "parent": 1
+        },
+        "chunk_count": 2,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 256.0,
+          "maximum": 256,
+          "minimum": 256,
+          "oversize_count": 0,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "cb373574b6b74072a61cd21bf116e6be",
+      "started_at": "2026-07-26T08:06:14.754Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "fc89255fe83046138267e888fde2aac4",
+      "duration_ms": 12052,
+      "ended_at": "2026-07-26T08:06:26.882Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 2
+        },
+        "by_type": {
+          "child": 1,
+          "parent": 1
+        },
+        "chunk_count": 2,
+        "doc_id": "5dd14487656310163520dbcb70fefbb6",
+        "lengths": {
+          "average": 256.0,
+          "maximum": 256,
+          "minimum": 256,
+          "oversize_count": 0,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 2,
+        "vector_chunks": 1
+      },
+      "span_id": "5acfdf13226040579590b23be1a1d3c0",
+      "started_at": "2026-07-26T08:06:14.830Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "f1e7e949f3b04983b856e84844bfb6b4",
+      "duration_ms": 37,
+      "ended_at": "2026-07-26T08:06:26.927Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "4cb0a4a6132a4320b25aba4e04d1fc32",
+      "started_at": "2026-07-26T08:06:26.891Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "f52d164aa8fd467eb4edcfce3f0c7924",
+      "duration_ms": 83,
+      "ended_at": "2026-07-26T08:06:27.020Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "43b00634204b45748fd4aa2721adfdbc",
+      "started_at": "2026-07-26T08:06:26.936Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T08:06:14.603Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-GPON-C-732f007e1616",
+  "trace_id": "732f007e1616454e8e691b0044b1ebc1"
+}

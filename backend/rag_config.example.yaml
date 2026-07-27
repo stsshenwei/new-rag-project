@@ -1,0 +1,79 @@
+# Application observability is configured with process env variables, not this RAG YAML:
+# LOG_LEVEL=debug
+# LOG_PATH=log/app.log
+# LOG_FORMAT=%d %level %traceId %msg
+
+rag:
+  parser:
+    type: docling
+  embedding:
+    provider: qwen
+    model: text-embedding-v3
+    base_url: ${EMBEDDING_BASE_URL}
+    api_key: ${EMBEDDING_API_KEY}
+  vector_store:
+    type: milvus
+    url: ${MILVUS_URI}
+    collection: rag_chunks
+  keyword_search:
+    type: milvus
+    url: ${MILVUS_URI}
+    index: rag_chunks
+  reranker:
+    enabled: true
+    provider: bge
+    model: bge-reranker-v2-m3
+  retrieval:
+    dense_top_k: 50
+    keyword_top_k: 50
+    fusion_top_k: 30
+    rerank_top_k: 8
+    rrf_k: 60
+    rrf_vector_weight: 0.7
+    rrf_keyword_weight: 0.3
+    reranker_threshold: 0.3
+    reranker_fallback_min_score: 0.15
+    reranker_degradation_enabled: true
+    reranker_degraded_threshold: 0.15
+    reranker_fallback_top_n: 1
+    low_recall_query_expansion_enabled: false
+    low_recall_min_candidates: 3
+    low_recall_min_score: 0.2
+    low_recall_max_queries: 3
+    mmr_enabled: false
+    mmr_lambda: 0.75
+    mmr_top_k: 0
+    duplicate_overlap_threshold: 0.92
+    direct_load_max_chunks: 50
+  context:
+    max_tokens: 8000
+    include_neighbor_chunks: true
+    short_chunk_min_chars: 240
+    expanded_chunk_max_chars: 1200
+  llm:
+    provider: qwen
+    model: qwen-plus
+    base_url: ${LLM_BASE_URL}
+    api_key: ${LLM_API_KEY}
+
+processing_worker:
+  enabled: false
+  poll_interval_seconds: 1.0
+  lease_timeout_seconds: 300
+  max_concurrent_tasks: 1
+  default_max_attempts: 3
+  retry_backoff_seconds: [10, 30, 120]
+
+prompts:
+  directory: config/prompt_templates
+  required:
+    - agent_system_prompt
+    - context_template
+    - query_rewrite
+    - intent_detection
+    - keywords_extraction
+    - generate_summary
+    - generated_questions
+    - session_title
+    - graph_extraction
+    - fallback

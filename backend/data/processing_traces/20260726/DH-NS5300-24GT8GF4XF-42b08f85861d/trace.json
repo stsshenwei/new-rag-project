@@ -1,0 +1,254 @@
+{
+  "doc_id": "7a33b838974ed40292c08b3f45de81c5",
+  "duration_ms": 18988,
+  "ended_at": "2026-07-26T12:01:58.858Z",
+  "error": null,
+  "file_name": "DH-NS5300-24GT8GF4XF.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 3331,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-NS5300-24GT8GF4XF.txt",
+  "spans": [
+    {
+      "_db_span_id": "74cda1107c46461fb924d79651e694c1",
+      "duration_ms": 53,
+      "ended_at": "2026-07-26T12:01:39.990Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-NS5300-24GT8GF4XF.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 3331,
+        "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-NS5300-24GT8GF4XF.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 1986,
+        "doc_id": "7a33b838974ed40292c08b3f45de81c5",
+        "document_metadata": {},
+        "elements": 197,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 4,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "fa2cab3ad643416da883b9fe4e04a743",
+      "started_at": "2026-07-26T12:01:39.937Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "650e6123b9f745708c745db6098135cd",
+      "duration_ms": 48,
+      "ended_at": "2026-07-26T12:01:40.049Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 567.4285714285714,
+          "maximum": 1986,
+          "minimum": 99,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "af1b4d063469480691299496a46e2deb",
+      "started_at": "2026-07-26T12:01:40.001Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "b1f29fba3aff4180872681196567e15b",
+      "duration_ms": 18665,
+      "ended_at": "2026-07-26T12:01:58.728Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "doc_id": "7a33b838974ed40292c08b3f45de81c5",
+        "lengths": {
+          "average": 567.4285714285714,
+          "maximum": 1986,
+          "minimum": 99,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 7,
+        "vector_chunks": 6
+      },
+      "span_id": "d1a7fb7d2edd443283ef671d22eea026",
+      "started_at": "2026-07-26T12:01:40.062Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "d00e2a25916444e7b7bf6644bdb88b89",
+      "duration_ms": 32,
+      "ended_at": "2026-07-26T12:01:58.769Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "1597e32ffcfb41a6809fbad3a0e05c99",
+      "started_at": "2026-07-26T12:01:58.736Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "5d670dd27e5640ab971eff9deddf96b5",
+      "duration_ms": 75,
+      "ended_at": "2026-07-26T12:01:58.852Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "161330053f3c4409beea6f06b994ac6e",
+      "started_at": "2026-07-26T12:01:58.777Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T12:01:39.870Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-NS5300-24GT8GF4XF-42b08f85861d",
+  "trace_id": "42b08f85861d401bb36c2b479a067660"
+}

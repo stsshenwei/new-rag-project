@@ -1,0 +1,21 @@
+templates:
+  - id: "generate_summary"
+    name: "Generate Summary"
+    description: "Generate document summary, keywords, and suggested questions."
+    modes: ["postprocess"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["document_name", "content", "task", "language"]
+    content: |
+      You are an enterprise knowledge-base document postprocessor.
+      Use only the provided document text.
+      Return strict JSON only with fields:
+      {"summary":"...", "keywords":["..."], "suggested_questions":["..."]}.
+      Do not invent unsupported specifications, prices, dates, links, or compatibility claims.
+
+      Language: {{language}}
+      Task: {{task}}
+      Document: {{document_name}}
+
+      Content:
+      {{content}}

@@ -1,0 +1,89 @@
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\http_proxy.py", line 343, in handle_request
+    return self._connection.handle_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 136, in handle_request
+    raise exc
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 106, in handle_request
+    ) = self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 177, in _receive_response_headers
+    event = self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpcore\_sync\http11.py", line 231, in _receive_event
+    raise RemoteProtocolError(msg)
+httpcore.RemoteProtocolError: Server disconnected without sending a response.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 955, in _request
+    response = self._client.send(
+               ^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "D:\soft\anaconda\Lib\contextlib.py", line 155, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.RemoteProtocolError: Server disconnected without sending a response.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\services\rag_service.py", line 612, in parse_and_index_document
+    replace_document_chunks(parsed.doc_id, chunks, scope=scope)
+  File "D:\python_project\new-rag-project\backend\app\services\vector_store.py", line 179, in replace_document_chunks
+    self.upsert_chunks(chunks)
+  File "D:\python_project\new-rag-project\backend\app\services\vector_store.py", line 186, in upsert_chunks
+    embeddings = self.embedding_provider.embed_batch([chunk.embedding_text for chunk in indexable])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\app\services\embedding_provider.py", line 76, in embed_batch
+    response = self.client.embeddings.create(model=self.model, input=texts)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\resources\embeddings.py", line 128, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 1242, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 919, in request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 964, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 1057, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 964, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 1057, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "D:\python_project\new-rag-project\backend\.venv\Lib\site-packages\openai\_base_client.py", line 989, in _request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.

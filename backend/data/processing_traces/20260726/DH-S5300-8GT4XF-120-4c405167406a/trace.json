@@ -1,0 +1,214 @@
+{
+  "doc_id": "4d4e1b1cfb17832283cbde27e0c1e433",
+  "duration_ms": 63171,
+  "ended_at": "2026-07-26T12:07:22.287Z",
+  "error": {
+    "message": "Connection error.",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 101, in map_httpcore_exceptions\n    yield\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 250, in handle_request\n    resp = self._pool.handle_request(req)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\connection_pool.py\", line 256, in handle_request\n    raise exc from None\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\connection_pool.py\", line 236, in handle_request\n    response = connection.handle_request(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http_proxy.py\", line 343, in handle_request\n    return self._connection.handle_request(request)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 136, in handle_request\n    raise exc\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 106, in handle_request\n    ) = self._receive_response_headers(**kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 177, in _receive_response_headers\n    event = self._receive_event(timeout=timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 231, in _receive_event\n    raise RemoteProtocolError(msg)\nhttpcore.RemoteProtocolError: Server disconnected without sending a response.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 955, in _request\n    response = self._client.send(\n               ^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 914, in send\n    response = self._send_handling_auth(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 942, in _send_handling_auth\n    response = self._send_handling_redirects(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 979, in _send_handling_redirects\n    response = self._send_single_request(request)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 1014, in _send_single_request\n    response = transport.handle_request(request)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 249, in handle_request\n    with map_httpcore_exceptions():\n  File \"D:\\soft\\anaconda\\Lib\\contextlib.py\", line 155, in __exit__\n    self.gen.throw(typ, value, traceback)\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 118, in map_httpcore_exceptions\n    raise mapped_exc(message) from exc\nhttpx.RemoteProtocolError: Server disconnected without sending a response.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\rag_service.py\", line 612, in parse_and_index_document\n    replace_document_chunks(parsed.doc_id, chunks, scope=scope)\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\vector_store.py\", line 179, in replace_document_chunks\n    self.upsert_chunks(chunks)\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\vector_store.py\", line 186, in upsert_chunks\n    embeddings = self.embedding_provider.embed_batch([chunk.embedding_text for chunk in indexable])\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\embedding_provider.py\", line 76, in embed_batch\n    response = self.client.embeddings.create(model=self.model, input=texts)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\resources\\embeddings.py\", line 128, in create\n    return self._post(\n           ^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1242, in post\n    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 919, in request\n    return self._request(\n           ^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 964, in _request\n    return self._retry_request(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1057, in _retry_request\n    return self._request(\n           ^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 964, in _request\n    return self._retry_request(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1057, in _retry_request\n    return self._request(\n           ^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 989, in _request\n    raise APIConnectionError(request=request) from err\nopenai.APIConnectionError: Connection error.\n",
+    "type": "APIConnectionError"
+  },
+  "file_name": "DH-S5300-8GT4XF-120.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 4478,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-S5300-8GT4XF-120.txt",
+  "spans": [
+    {
+      "_db_span_id": "af2f37ca6fd64b64ac88d436682aeb6c",
+      "duration_ms": 48,
+      "ended_at": "2026-07-26T12:06:19.219Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-S5300-8GT4XF-120.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 4478,
+        "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-S5300-8GT4XF-120.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 2588,
+        "doc_id": "4d4e1b1cfb17832283cbde27e0c1e433",
+        "document_metadata": {},
+        "elements": 253,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 3,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "67a69c25d05d44d9aa2f948289d534a8",
+      "started_at": "2026-07-26T12:06:19.171Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "6419fd7e848f41e58a41ed3269c35ca2",
+      "duration_ms": 49,
+      "ended_at": "2026-07-26T12:06:19.277Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 8
+        },
+        "by_type": {
+          "child": 7,
+          "parent": 1
+        },
+        "chunk_count": 8,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 647.0,
+          "maximum": 2588,
+          "minimum": 307,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "67a454b1576a4f809a273e94845f7e0e",
+      "started_at": "2026-07-26T12:06:19.228Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "00a455215e9c4ad5858c5744923041e9",
+      "duration_ms": 62954,
+      "ended_at": "2026-07-26T12:07:22.242Z",
+      "error": {
+        "message": "Connection error.",
+        "traceback": "Traceback (most recent call last):\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 101, in map_httpcore_exceptions\n    yield\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 250, in handle_request\n    resp = self._pool.handle_request(req)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\connection_pool.py\", line 256, in handle_request\n    raise exc from None\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\connection_pool.py\", line 236, in handle_request\n    response = connection.handle_request(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http_proxy.py\", line 343, in handle_request\n    return self._connection.handle_request(request)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 136, in handle_request\n    raise exc\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 106, in handle_request\n    ) = self._receive_response_headers(**kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 177, in _receive_response_headers\n    event = self._receive_event(timeout=timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpcore\\_sync\\http11.py\", line 231, in _receive_event\n    raise RemoteProtocolError(msg)\nhttpcore.RemoteProtocolError: Server disconnected without sending a response.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 955, in _request\n    response = self._client.send(\n               ^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 914, in send\n    response = self._send_handling_auth(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 942, in _send_handling_auth\n    response = self._send_handling_redirects(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 979, in _send_handling_redirects\n    response = self._send_single_request(request)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_client.py\", line 1014, in _send_single_request\n    response = transport.handle_request(request)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 249, in handle_request\n    with map_httpcore_exceptions():\n  File \"D:\\soft\\anaconda\\Lib\\contextlib.py\", line 155, in __exit__\n    self.gen.throw(typ, value, traceback)\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\httpx\\_transports\\default.py\", line 118, in map_httpcore_exceptions\n    raise mapped_exc(message) from exc\nhttpx.RemoteProtocolError: Server disconnected without sending a response.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\processing_trace.py\", line 224, in span\n    yield span\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\rag_service.py\", line 612, in parse_and_index_document\n    replace_document_chunks(parsed.doc_id, chunks, scope=scope)\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\vector_store.py\", line 179, in replace_document_chunks\n    self.upsert_chunks(chunks)\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\vector_store.py\", line 186, in upsert_chunks\n    embeddings = self.embedding_provider.embed_batch([chunk.embedding_text for chunk in indexable])\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\app\\services\\embedding_provider.py\", line 76, in embed_batch\n    response = self.client.embeddings.create(model=self.model, input=texts)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\resources\\embeddings.py\", line 128, in create\n    return self._post(\n           ^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1242, in post\n    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 919, in request\n    return self._request(\n           ^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 964, in _request\n    return self._retry_request(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1057, in _retry_request\n    return self._request(\n           ^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 964, in _request\n    return self._retry_request(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1057, in _retry_request\n    return self._request(\n           ^^^^^^^^^^^^^^\n  File \"D:\\python_project\\new-rag-project\\backend\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 989, in _request\n    raise APIConnectionError(request=request) from err\nopenai.APIConnectionError: Connection error.\n",
+        "type": "APIConnectionError"
+      },
+      "input": {
+        "by_strategy": {
+          "legacy": 8
+        },
+        "by_type": {
+          "child": 7,
+          "parent": 1
+        },
+        "chunk_count": 8,
+        "doc_id": "4d4e1b1cfb17832283cbde27e0c1e433",
+        "lengths": {
+          "average": 647.0,
+          "maximum": 2588,
+          "minimum": 307,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {},
+      "span_id": "50b4ec1f33ee4466a285cb95b0c6a043",
+      "started_at": "2026-07-26T12:06:19.288Z",
+      "status": "failed"
+    }
+  ],
+  "started_at": "2026-07-26T12:06:19.121Z",
+  "status": "failed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-S5300-8GT4XF-120-4c405167406a",
+  "trace_id": "4c405167406a4e9ba63a6de84a6e8031"
+}

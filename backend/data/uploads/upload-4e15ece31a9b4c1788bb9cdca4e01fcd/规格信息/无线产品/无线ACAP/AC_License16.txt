@@ -1,0 +1,1 @@
+AC控制器license纸质授权（License步长16）- 适配型号DH-AC512和DH-AC2048

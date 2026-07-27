@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Env
+.env
+.env.local
+
+# Data store
+backend/chroma_db/

@@ -1,0 +1,254 @@
+{
+  "doc_id": "eb5ff3d3a4db488e4adefefa6b6a12db",
+  "duration_ms": 13636,
+  "ended_at": "2026-07-21T16:17:01.746Z",
+  "error": null,
+  "file_name": "TSFP-CU1M-DAC.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 602,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-55db87c19da84372aac41fc355fe08fb/TSFP-CU1M-DAC.txt",
+  "spans": [
+    {
+      "_db_span_id": "b49d50d9a6f3443fa9e79266d93cb7a0",
+      "duration_ms": 59,
+      "ended_at": "2026-07-21T16:16:48.252Z",
+      "error": null,
+      "input": {
+        "file_name": "TSFP-CU1M-DAC.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 602,
+        "source": "uploads/upload-55db87c19da84372aac41fc355fe08fb/TSFP-CU1M-DAC.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 368,
+        "doc_id": "eb5ff3d3a4db488e4adefefa6b6a12db",
+        "document_metadata": {},
+        "elements": 32,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 8,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "0d25c0571d2f4b209269ff5b026ccebf",
+      "started_at": "2026-07-21T16:16:48.191Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "916f49c4921148abbaef61e3ce161ec1",
+      "duration_ms": 62,
+      "ended_at": "2026-07-21T16:16:48.341Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 2
+        },
+        "by_type": {
+          "child": 1,
+          "parent": 1
+        },
+        "chunk_count": 2,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 338.0,
+          "maximum": 338,
+          "minimum": 338,
+          "oversize_count": 0,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "2d4566551d2a46a9b91415aa5da25099",
+      "started_at": "2026-07-21T16:16:48.278Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "df851b546cdb4d73ad1099ae3191cae8",
+      "duration_ms": 12983,
+      "ended_at": "2026-07-21T16:17:01.353Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 2
+        },
+        "by_type": {
+          "child": 1,
+          "parent": 1
+        },
+        "chunk_count": 2,
+        "doc_id": "eb5ff3d3a4db488e4adefefa6b6a12db",
+        "lengths": {
+          "average": 338.0,
+          "maximum": 338,
+          "minimum": 338,
+          "oversize_count": 0,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 2,
+        "vector_chunks": 1
+      },
+      "span_id": "3151d7dba30d44a4a99595a024e36645",
+      "started_at": "2026-07-21T16:16:48.369Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "4c1410db11e241d1a8db0ee1c91e0ad0",
+      "duration_ms": 125,
+      "ended_at": "2026-07-21T16:17:01.513Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "c3f6c565996e4c048912a1f0f908ae46",
+      "started_at": "2026-07-21T16:17:01.387Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "beb56a5b98e6446bb170f81eb340f354",
+      "duration_ms": 173,
+      "ended_at": "2026-07-21T16:17:01.709Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "59ceca31eeb042a99d295e79eee6bbc5",
+      "started_at": "2026-07-21T16:17:01.536Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-21T16:16:48.110Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260721\\TSFP-CU1M-DAC-abadcf7c2a15",
+  "trace_id": "abadcf7c2a154cde8355c76812101c0e"
+}

@@ -1,0 +1,96 @@
+[
+  {
+    "id": "native_pdf",
+    "kind": "pdf_diagnostics",
+    "description": "Synthetic native-text PDF diagnostic shape.",
+    "expected": {
+      "page_count": 2,
+      "text_page_count": 2,
+      "scanned_page_count": 0,
+      "source_classification": "native"
+    }
+  },
+  {
+    "id": "scanned_pdf",
+    "kind": "pdf_diagnostics",
+    "description": "Synthetic scanned PDF diagnostic shape.",
+    "expected": {
+      "page_count": 2,
+      "text_page_count": 0,
+      "scanned_page_count": 2,
+      "source_classification": "scanned"
+    }
+  },
+  {
+    "id": "hybrid_pdf",
+    "kind": "pdf_diagnostics",
+    "description": "Synthetic hybrid PDF diagnostic shape.",
+    "expected": {
+      "page_count": 3,
+      "text_page_count": 2,
+      "scanned_page_count": 1,
+      "source_classification": "hybrid"
+    }
+  },
+  {
+    "id": "structured_markdown",
+    "kind": "chunking_text",
+    "content": "# Overview\nAlpha text.\n# Install\nStep text.\n# Operate\nRuntime text.\n# Troubleshoot\nRecovery text.",
+    "expected": {
+      "md_heading_total": 4,
+      "dominant_heading_level": 1,
+      "tier_chain": ["heading", "legacy"],
+      "selected_tier": "legacy"
+    }
+  },
+  {
+    "id": "heuristic_sections",
+    "kind": "chunking_text",
+    "content": "Chapter 1 Overview\nAlpha text.\n\nChapter 2 Install\nStep text.\n\nChapter 3 Operate\nRuntime text.\n\f\nAppendix\nReference.",
+    "expected": {
+      "english_chapter_count": 3,
+      "form_feed_count": 1,
+      "tier_chain": ["heuristic", "legacy"]
+    }
+  },
+  {
+    "id": "unstructured_plain",
+    "kind": "chunking_text",
+    "content": "plain operational note repeated many times. plain operational note repeated many times. plain operational note repeated many times.",
+    "expected": {
+      "md_heading_total": 0,
+      "tier_chain": ["legacy"],
+      "selected_tier": "legacy"
+    }
+  },
+  {
+    "id": "markdown_table",
+    "kind": "chunking_text",
+    "content": "Before table.\n\n| Name | Value |\n| --- | --- |\n| timeout | 30 |\n| retry | 3 |\n\nAfter table.",
+    "expected": {
+      "has_tables": true,
+      "tier_chain": ["legacy"],
+      "selected_tier": "legacy"
+    }
+  },
+  {
+    "id": "code_block",
+    "kind": "chunking_text",
+    "content": "Intro.\n\n```python\n# not a heading\nprint('safe fixture')\n```\n\nOutro.",
+    "expected": {
+      "has_code": true,
+      "md_heading_total": 0,
+      "tier_chain": ["legacy"]
+    }
+  },
+  {
+    "id": "cjk_prose",
+    "kind": "chunking_text",
+    "content": "这是一个安全测试夹具。它包含中文句子，用于验证语言提示和递归兜底。这里没有真实业务语料。",
+    "expected": {
+      "detected_languages": ["zh"],
+      "tier_chain": ["legacy"],
+      "selected_tier": "legacy"
+    }
+  }
+]

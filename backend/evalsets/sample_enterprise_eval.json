@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "id": "sample-enterprise-eval",
+  "name": "Sample Enterprise Evaluation",
+  "version": "2026.07",
+  "metadata": {
+    "description": "Small smoke dataset for Raw RAG, GraphRAG, and Agentic Retrieval evaluation."
+  },
+  "cases": [
+    {
+      "id": "fact-service-cache",
+      "question": "What cache does the API service use?",
+      "query_type": "fact",
+      "tags": ["fact", "raw-rag"],
+      "expected_answer_terms": ["Redis"],
+      "expected_tools": ["RawRAGTool"]
+    },
+    {
+      "id": "source-manual",
+      "question": "Which source describes the API service cache?",
+      "query_type": "source",
+      "tags": ["source", "citation"],
+      "expected_tools": ["RawRAGTool"]
+    },
+    {
+      "id": "dependency-api-redis",
+      "question": "Does the API service depend on Redis?",
+      "query_type": "dependency",
+      "tags": ["dependency", "graph"],
+      "expected_answer_terms": ["Redis"],
+      "expected_tools": ["GraphRetrieverTool"]
+    },
+    {
+      "id": "impact-redis-outage",
+      "question": "What is impacted if Redis is unavailable?",
+      "query_type": "impact",
+      "tags": ["impact", "graph"],
+      "expected_tools": ["GraphRetrieverTool", "RawRAGTool"]
+    },
+    {
+      "id": "troubleshoot-config",
+      "question": "How should I troubleshoot a missing Redis configuration?",
+      "query_type": "troubleshooting",
+      "tags": ["troubleshooting"],
+      "expected_tools": ["RawRAGTool", "KeywordSearchTool"]
+    },
+    {
+      "id": "unknown-owner",
+      "question": "Who approved the undocumented production exception?",
+      "query_type": "fact",
+      "tags": ["insufficient-evidence"],
+      "expect_insufficient_evidence": true
+    }
+  ]
+}

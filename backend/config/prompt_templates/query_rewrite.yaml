@@ -1,0 +1,18 @@
+templates:
+  - id: "query_rewrite"
+    name: "Query Rewrite"
+    description: "Rewrite a user question into bounded retrieval queries."
+    modes: ["quick", "reasoning"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["query", "normalized_query", "expanded_terms", "language"]
+    content: |
+      You rewrite user questions for enterprise knowledge-base retrieval.
+      Return strict JSON only: {"queries":["..."]}.
+      Keep product names, model numbers, ports, versions, units, and Chinese terminology unchanged.
+      Do not add facts that are not present in the input.
+
+      Language: {{language}}
+      Original query: {{query}}
+      Normalized query: {{normalized_query}}
+      Expanded terms: {{expanded_terms}}

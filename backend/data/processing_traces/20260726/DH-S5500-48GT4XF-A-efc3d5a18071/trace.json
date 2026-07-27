@@ -1,0 +1,254 @@
+{
+  "doc_id": "711b8d6951c58826c58a2478231b0e20",
+  "duration_ms": 22134,
+  "ended_at": "2026-07-26T12:10:12.730Z",
+  "error": null,
+  "file_name": "DH-S5500-48GT4XF-A.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 3305,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-S5500-48GT4XF-A.txt",
+  "spans": [
+    {
+      "_db_span_id": "bb67d5f712e64821ad30583c8d7f94dc",
+      "duration_ms": 40,
+      "ended_at": "2026-07-26T12:09:50.680Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-S5500-48GT4XF-A.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 3305,
+        "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-S5500-48GT4XF-A.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 2005,
+        "doc_id": "711b8d6951c58826c58a2478231b0e20",
+        "document_metadata": {},
+        "elements": 181,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 2,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "8464371d3b4e45d68e10b94e30aa9a6b",
+      "started_at": "2026-07-26T12:09:50.639Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "acd0188455364c95ad7db86e3cd13e16",
+      "duration_ms": 34,
+      "ended_at": "2026-07-26T12:09:50.723Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 572.8571428571429,
+          "maximum": 2005,
+          "minimum": 169,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "a3d49999977d41ae9e8509014d48e4be",
+      "started_at": "2026-07-26T12:09:50.689Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "bb0e06a34ea34c24bcfe7a4efb0dda86",
+      "duration_ms": 21821,
+      "ended_at": "2026-07-26T12:10:12.552Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "doc_id": "711b8d6951c58826c58a2478231b0e20",
+        "lengths": {
+          "average": 572.8571428571429,
+          "maximum": 2005,
+          "minimum": 169,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 7,
+        "vector_chunks": 6
+      },
+      "span_id": "bbb0e4b8d59740d8a8d914eee0fba62e",
+      "started_at": "2026-07-26T12:09:50.730Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "bb6d60804db34d27a65783542eb81d13",
+      "duration_ms": 32,
+      "ended_at": "2026-07-26T12:10:12.619Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "0011646923ed4d1d8d22184ade58beb9",
+      "started_at": "2026-07-26T12:10:12.586Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "6292625e9eef4200a07e7caf4dd36721",
+      "duration_ms": 94,
+      "ended_at": "2026-07-26T12:10:12.721Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "5b364fbccd5e4840b911e37a7cdff436",
+      "started_at": "2026-07-26T12:10:12.626Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T12:09:50.595Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-S5500-48GT4XF-A-efc3d5a18071",
+  "trace_id": "efc3d5a180714713952b7ba34df9bd83"
+}

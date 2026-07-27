@@ -1,0 +1,254 @@
+{
+  "doc_id": "e4d2cc8ed80cf2ec8d8ee82ce0e4c0a2",
+  "duration_ms": 11072,
+  "ended_at": "2026-07-19T02:41:11.645Z",
+  "error": null,
+  "file_name": "DH-P5000-08GP-AC.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "chroma_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 3883,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "chroma_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-916c4d5b61d847d4936f3ac54142d665/DH-P5000-08GP-AC.txt",
+  "spans": [
+    {
+      "_db_span_id": "5f424a610d274f70815305fd624480fb",
+      "duration_ms": 52,
+      "ended_at": "2026-07-19T02:41:00.678Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-P5000-08GP-AC.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 3883,
+        "source": "uploads/upload-916c4d5b61d847d4936f3ac54142d665/DH-P5000-08GP-AC.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 2190,
+        "doc_id": "e4d2cc8ed80cf2ec8d8ee82ce0e4c0a2",
+        "document_metadata": {},
+        "elements": 189,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 8,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "2e274ec4c68145c6bcf29e0ba85b9a07",
+      "started_at": "2026-07-19T02:41:00.625Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "2dc331055441471cbab7fe1e8c34257e",
+      "duration_ms": 29,
+      "ended_at": "2026-07-19T02:41:00.717Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 622.8571428571429,
+          "maximum": 2180,
+          "minimum": 288,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "7476ae0e324d4713954283358f73ed37",
+      "started_at": "2026-07-19T02:41:00.687Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "93d22c45d9cf4a0dac97d8306fd97881",
+      "duration_ms": 10816,
+      "ended_at": "2026-07-19T02:41:11.542Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "doc_id": "e4d2cc8ed80cf2ec8d8ee82ce0e4c0a2",
+        "lengths": {
+          "average": 622.8571428571429,
+          "maximum": 2180,
+          "minimum": 288,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 7,
+        "vector_chunks": 6
+      },
+      "span_id": "29db8e6bfae64a588675bcdec6350b29",
+      "started_at": "2026-07-19T02:41:00.726Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "6215a94b7a18468c8323498e72613f0c",
+      "duration_ms": 26,
+      "ended_at": "2026-07-19T02:41:11.579Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "1304a27c83ff443584814ac853d62f75",
+      "started_at": "2026-07-19T02:41:11.553Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "3e8ac7b5dd9c4c1c8f1fe663362e0f2b",
+      "duration_ms": 47,
+      "ended_at": "2026-07-19T02:41:11.636Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "92ed0ac577f841a88c5717925a1b15d4",
+      "started_at": "2026-07-19T02:41:11.589Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-19T02:41:00.572Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260719\\DH-P5000-08GP-AC-cb78a2486e67",
+  "trace_id": "cb78a2486e67410388124daa010e20ba"
+}

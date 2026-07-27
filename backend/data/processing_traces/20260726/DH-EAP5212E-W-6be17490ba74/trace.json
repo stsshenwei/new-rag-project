@@ -1,0 +1,254 @@
+{
+  "doc_id": "04a7fcca2726b3b35116ca4138e86fb3",
+  "duration_ms": 21089,
+  "ended_at": "2026-07-26T11:10:44.475Z",
+  "error": null,
+  "file_name": "DH-EAP5212E-W.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 2378,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-b9758b206dba41ea8eed42b19c634b1b/规格信息/无线产品/无线ACAP/DH-EAP5212E-W.txt",
+  "spans": [
+    {
+      "_db_span_id": "d1130343a67f4394b16c0b4a365e0762",
+      "duration_ms": 36,
+      "ended_at": "2026-07-26T11:10:23.468Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-EAP5212E-W.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 2378,
+        "source": "uploads/upload-b9758b206dba41ea8eed42b19c634b1b/规格信息/无线产品/无线ACAP/DH-EAP5212E-W.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 1590,
+        "doc_id": "04a7fcca2726b3b35116ca4138e86fb3",
+        "document_metadata": {},
+        "elements": 126,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 2,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "b2f4059da74f45d0a47226aad226f88f",
+      "started_at": "2026-07-26T11:10:23.431Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "288a42c8f46749f9b5c41e11af3cd334",
+      "duration_ms": 40,
+      "ended_at": "2026-07-26T11:10:23.516Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 6
+        },
+        "by_type": {
+          "child": 5,
+          "parent": 1
+        },
+        "chunk_count": 6,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 530.0,
+          "maximum": 1590,
+          "minimum": 91,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "a2ef244f58514bc19dcf1fe0bd2a1929",
+      "started_at": "2026-07-26T11:10:23.476Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "8036807afc18402aa0cc88d44b816874",
+      "duration_ms": 20832,
+      "ended_at": "2026-07-26T11:10:44.359Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 6
+        },
+        "by_type": {
+          "child": 5,
+          "parent": 1
+        },
+        "chunk_count": 6,
+        "doc_id": "04a7fcca2726b3b35116ca4138e86fb3",
+        "lengths": {
+          "average": 530.0,
+          "maximum": 1590,
+          "minimum": 91,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 6,
+        "vector_chunks": 5
+      },
+      "span_id": "8307a4199ca4479c95392383f8df3e02",
+      "started_at": "2026-07-26T11:10:23.526Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "c519f8bef7df4716b0078a31d8a32b93",
+      "duration_ms": 34,
+      "ended_at": "2026-07-26T11:10:44.403Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "4ab30fb709094d79a5dc406d499283c6",
+      "started_at": "2026-07-26T11:10:44.368Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "dd08700cad9a420bb60e7599dd7dd313",
+      "duration_ms": 55,
+      "ended_at": "2026-07-26T11:10:44.467Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "58c4c28da96148eb9bca9b5aa7a6e164",
+      "started_at": "2026-07-26T11:10:44.411Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T11:10:23.386Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-EAP5212E-W-6be17490ba74",
+  "trace_id": "6be17490ba74424c956a4fd6055ee1a5"
+}

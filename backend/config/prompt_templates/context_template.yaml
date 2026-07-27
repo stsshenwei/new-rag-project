@@ -1,0 +1,117 @@
+# Context templates adapted from Weknora.
+# These templates format the user message, runtime metadata, conversation context,
+# temporary attachments, and optional retrieved contexts.
+templates:
+  - id: "default_context"
+    name: "Default Context"
+    description: "Default runtime context wrapper for chat and agent turns."
+    default: true
+    has_knowledge_base: true
+    placeholders: ["current_time", "current_week", "knowledge_base_scope", "bound_knowledge_bases", "conversation_context", "memory_context", "temporary_attachments", "contexts", "answer_guidance", "query", "language"]
+    content: |
+      <runtime_context>
+      Current time: {{current_time}} {{current_week}}
+      {{knowledge_base_scope}}
+      {{bound_knowledge_bases}}
+      </runtime_context>
+
+      {{conversation_context}}
+      {{memory_context}}
+      {{temporary_attachments}}
+      {{contexts}}
+      {{answer_guidance}}
+
+      <user_question>
+      {{query}}
+      </user_question>
+
+      IMPORTANT: Always respond in {{language}}.
+
+  - id: "qa_context"
+    name: "Q&A Context"
+    description: "Context template optimized for retrieval Q&A."
+    has_knowledge_base: true
+    placeholders: ["contexts", "knowledge_base_scope", "bound_knowledge_bases", "conversation_context", "memory_context", "temporary_attachments", "query", "answer_guidance", "language"]
+    content: |
+      You need to answer a question. Below are potentially relevant materials:
+
+      {{contexts}}
+
+      Runtime metadata:
+      {{knowledge_base_scope}}
+      {{bound_knowledge_bases}}
+
+      Conversation:
+      {{conversation_context}}
+      {{memory_context}}
+      {{temporary_attachments}}
+
+      The user's question is:
+      {{query}}
+
+      Requirements:
+      - Answer directly and do not repeat the question.
+      - If the materials do not contain enough relevant information, state that clearly.
+      - Do not fabricate facts, commands, versions, URLs, or parameters.
+      {{answer_guidance}}
+      - Always respond in {{language}}.
+
+  - id: "detailed_context"
+    name: "Detailed Context"
+    description: "Verbose context wrapper for traceable, evidence-first answers."
+    has_knowledge_base: true
+    placeholders: ["current_time", "current_week", "knowledge_base_scope", "bound_knowledge_bases", "conversation_context", "memory_context", "temporary_attachments", "contexts", "answer_guidance", "query", "language"]
+    content: |
+      <runtime_context>
+      Current time: {{current_time}} {{current_week}}
+      Knowledge base scope:
+      {{knowledge_base_scope}}
+
+      Bound knowledge bases:
+      {{bound_knowledge_bases}}
+      </runtime_context>
+
+      <conversation_context>
+      {{conversation_context}}
+      </conversation_context>
+
+      <memory_context>
+      {{memory_context}}
+      </memory_context>
+
+      <temporary_attachments>
+      {{temporary_attachments}}
+      </temporary_attachments>
+
+      <retrieved_contexts>
+      {{contexts}}
+      </retrieved_contexts>
+
+      <answer_guidance>
+      {{answer_guidance}}
+      </answer_guidance>
+
+      <user_question>
+      {{query}}
+      </user_question>
+
+      Answering rules:
+      - Use retrieved evidence first.
+      - Preserve important product names, model numbers, ports, units, and versions.
+      - If evidence is insufficient, say so explicitly.
+      - Always respond in {{language}}.
+
+  - id: "simple_context"
+    name: "Simple Context"
+    description: "Minimal context format for simple chat turns."
+    has_knowledge_base: false
+    placeholders: ["conversation_context", "memory_context", "temporary_attachments", "query", "answer_guidance", "language"]
+    content: |
+      {{conversation_context}}
+      {{memory_context}}
+      {{temporary_attachments}}
+
+      Question: {{query}}
+      {{answer_guidance}}
+
+      Please answer the above question in {{language}}.

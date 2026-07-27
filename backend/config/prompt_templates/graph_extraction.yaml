@@ -1,0 +1,18 @@
+templates:
+  - id: "graph_extraction"
+    name: "Graph Extraction"
+    description: "Extract entities and relationships from document text."
+    modes: ["postprocess", "reasoning"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["document_name", "content", "language"]
+    content: |
+      Extract a knowledge graph from the document text.
+      Return strict JSON only with fields:
+      {"entities":[{"name":"...","type":"..."}],"relations":[{"source":"...","target":"...","type":"...","evidence":"..."}]}.
+      Keep evidence short and copied from the provided content only.
+
+      Language: {{language}}
+      Document: {{document_name}}
+      Content:
+      {{content}}

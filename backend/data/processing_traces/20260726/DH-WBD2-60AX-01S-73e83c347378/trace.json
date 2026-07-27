@@ -1,0 +1,254 @@
+{
+  "doc_id": "b8d2e702d88231a135ff85439eac2a1a",
+  "duration_ms": 20268,
+  "ended_at": "2026-07-26T11:05:41.801Z",
+  "error": null,
+  "file_name": "DH-WBD2-60AX-01S.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 2049,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-b9758b206dba41ea8eed42b19c634b1b/规格信息/无线产品/网桥/DH-WBD2-60AX-01S.txt",
+  "spans": [
+    {
+      "_db_span_id": "482c38a1ec174b6391d13f8ca1756671",
+      "duration_ms": 52,
+      "ended_at": "2026-07-26T11:05:21.643Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-WBD2-60AX-01S.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 2049,
+        "source": "uploads/upload-b9758b206dba41ea8eed42b19c634b1b/规格信息/无线产品/网桥/DH-WBD2-60AX-01S.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 1216,
+        "doc_id": "b8d2e702d88231a135ff85439eac2a1a",
+        "document_metadata": {},
+        "elements": 109,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 2,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "57795ed4e35b43da8ac7417310552609",
+      "started_at": "2026-07-26T11:05:21.591Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "09c63ee4b90444b0b8ce79f08fea4884",
+      "duration_ms": 36,
+      "ended_at": "2026-07-26T11:05:21.689Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 5
+        },
+        "by_type": {
+          "child": 4,
+          "parent": 1
+        },
+        "chunk_count": 5,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 484.0,
+          "maximum": 1210,
+          "minimum": 92,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "a2bb8c533330438fbdced182c59cdbf7",
+      "started_at": "2026-07-26T11:05:21.652Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "e373469f54d74bae82d88fbab3ffb1fa",
+      "duration_ms": 19900,
+      "ended_at": "2026-07-26T11:05:41.598Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 5
+        },
+        "by_type": {
+          "child": 4,
+          "parent": 1
+        },
+        "chunk_count": 5,
+        "doc_id": "b8d2e702d88231a135ff85439eac2a1a",
+        "lengths": {
+          "average": 484.0,
+          "maximum": 1210,
+          "minimum": 92,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 5,
+        "vector_chunks": 4
+      },
+      "span_id": "67036dac76564d1b84409dc55c5249b3",
+      "started_at": "2026-07-26T11:05:21.697Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "1cf0c77d57e6436a8c6a10e54eb201b2",
+      "duration_ms": 50,
+      "ended_at": "2026-07-26T11:05:41.659Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "c4f1bcbeb6be41da92ff16707ecb9e2d",
+      "started_at": "2026-07-26T11:05:41.602Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "2a4844fd5e5e4257a904090d5feedca9",
+      "duration_ms": 100,
+      "ended_at": "2026-07-26T11:05:41.772Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "32c9349dcae245819a022f0a9d3fd19c",
+      "started_at": "2026-07-26T11:05:41.672Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T11:05:21.533Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-WBD2-60AX-01S-73e83c347378",
+  "trace_id": "73e83c34737848e1b3e4d75e41264b61"
+}

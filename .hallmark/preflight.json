@@ -1,0 +1,22 @@
+{
+  "scanned_at": "2026-07-22",
+  "framework": "Next.js 15 App Router",
+  "font_stack": "Plus Jakarta Sans, Inter, system-ui, PingFang SC, Microsoft YaHei",
+  "palette": "legacy CSS variables plus multiple blue/green/grey hard-coded families",
+  "motion": "CSS-only; no motion library dependency",
+  "spacing": "mostly 8px-derived spacing, previously not centralized",
+  "preserve": [
+    "Bee identity",
+    "two-column app shell",
+    "chat workflow",
+    "knowledge-base workspace",
+    "existing component ownership"
+  ],
+  "introduce": [
+    "portable token file",
+    "Operational Knowledge Console style",
+    "unified cobalt accent",
+    "restrained focus and hover states",
+    "reduced-motion fallback"
+  ]
+}

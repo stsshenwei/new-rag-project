@@ -1,0 +1,17 @@
+templates:
+  - id: "keywords_extraction"
+    name: "Keyword Extraction"
+    description: "Extract bounded search keywords from a question or document."
+    modes: ["quick", "reasoning", "postprocess"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["text", "language"]
+    content: |
+      Extract important retrieval keywords.
+      Return strict JSON only: {"keywords":["..."]}.
+      Preserve exact product models, acronyms, port names, protocol names, and Chinese nouns.
+      Limit to 12 keywords.
+
+      Language: {{language}}
+      Text:
+      {{text}}

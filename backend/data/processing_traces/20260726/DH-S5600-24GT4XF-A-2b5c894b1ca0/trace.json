@@ -1,0 +1,254 @@
+{
+  "doc_id": "55db4f541cebcc8bf52a165fd1c0bb24",
+  "duration_ms": 18566,
+  "ended_at": "2026-07-26T12:10:52.674Z",
+  "error": null,
+  "file_name": "DH-S5600-24GT4XF-A.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 5210,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-S5600-24GT4XF-A.txt",
+  "spans": [
+    {
+      "_db_span_id": "b4ded97d34f64931be8a7cc54ca953b5",
+      "duration_ms": 45,
+      "ended_at": "2026-07-26T12:10:34.195Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-S5600-24GT4XF-A.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 5210,
+        "source": "uploads/upload-dcbf9ca7d35b44df9466da8ed78ed0fb/汇聚交换机/汇聚交换机/DH-S5600-24GT4XF-A.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 3250,
+        "doc_id": "55db4f541cebcc8bf52a165fd1c0bb24",
+        "document_metadata": {},
+        "elements": 179,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 2,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "237cfeea3c3141878a11c29da37b6aa0",
+      "started_at": "2026-07-26T12:10:34.150Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "e946f97339844115a8f0cebd8e680c82",
+      "duration_ms": 35,
+      "ended_at": "2026-07-26T12:10:34.238Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 11
+        },
+        "by_type": {
+          "child": 10,
+          "parent": 1
+        },
+        "chunk_count": 11,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 589.4545454545455,
+          "maximum": 3242,
+          "minimum": 74,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "d8ca2ca0e11d4ce3ab24fcaa49c67dc5",
+      "started_at": "2026-07-26T12:10:34.203Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "6715aab0ec15480bb03723d1ab78825e",
+      "duration_ms": 18200,
+      "ended_at": "2026-07-26T12:10:52.447Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 11
+        },
+        "by_type": {
+          "child": 10,
+          "parent": 1
+        },
+        "chunk_count": 11,
+        "doc_id": "55db4f541cebcc8bf52a165fd1c0bb24",
+        "lengths": {
+          "average": 589.4545454545455,
+          "maximum": 3242,
+          "minimum": 74,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 11,
+        "vector_chunks": 10
+      },
+      "span_id": "cb97a6ad6c5a4e2db2a63d3955defaff",
+      "started_at": "2026-07-26T12:10:34.247Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "eef21929c9f0455b962c05bc559cf8c3",
+      "duration_ms": 67,
+      "ended_at": "2026-07-26T12:10:52.535Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "0ef42847fa7b48989d3660cd2b25161b",
+      "started_at": "2026-07-26T12:10:52.467Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "e8fcda9ba23544f2a3380e1d6d40c9f2",
+      "duration_ms": 110,
+      "ended_at": "2026-07-26T12:10:52.659Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "521e8a218b154ac49d375a9b51a18174",
+      "started_at": "2026-07-26T12:10:52.549Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T12:10:34.109Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-S5600-24GT4XF-A-2b5c894b1ca0",
+  "trace_id": "2b5c894b1ca04d018c5e0fa35259a0b3"
+}

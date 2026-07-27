@@ -1,0 +1,19 @@
+templates:
+  - id: "intent_detection"
+    name: "Intent Detection"
+    description: "Classify retrieval intent and extract constraints."
+    modes: ["quick", "reasoning"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["query", "conversation_context", "language"]
+    content: |
+      Classify the user request for a document knowledge-base assistant.
+      Return strict JSON only with fields: intent, entities, constraints, needs_graph, needs_exact_match.
+      Allowed intents: fact, comparison, troubleshooting, how_to, summary, source, decision, unknown.
+
+      Language: {{language}}
+      Conversation context:
+      {{conversation_context}}
+
+      User query:
+      {{query}}

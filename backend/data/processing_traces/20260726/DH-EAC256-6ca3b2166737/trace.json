@@ -1,0 +1,254 @@
+{
+  "doc_id": "f2d2f349b91c77b2692244311af39561",
+  "duration_ms": 25129,
+  "ended_at": "2026-07-26T11:11:09.809Z",
+  "error": null,
+  "file_name": "DH-EAC256.txt",
+  "metadata": {
+    "effective_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "inactive_overrides": [],
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "vector_db\\media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "disabled",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "processing_version": "weknora-adaptive-v1",
+      "question_generation_enabled": false,
+      "size_unit": "chars",
+      "warnings": []
+    },
+    "extension": ".txt",
+    "file_size": 3680,
+    "requested_processing": {
+      "caption_enabled": false,
+      "caption_provider": "disabled",
+      "child_chunk_overlap_chars": 76,
+      "child_chunk_size_chars": 384,
+      "chunk_strategy": "auto",
+      "dense_enabled": true,
+      "embedding_token_limit": 0,
+      "graph_enabled": false,
+      "keyword_enabled": true,
+      "max_protected_span_chars": 7500,
+      "media_max_bytes": 26214400,
+      "media_storage_dir": "./vector_db/media",
+      "media_storage_provider": "local",
+      "ocr_enabled": false,
+      "ocr_min_confidence": 0.6,
+      "ocr_provider": "docling",
+      "parent_child_enabled": true,
+      "parent_chunk_size_chars": 4096,
+      "parser_engine": "builtin",
+      "pdf_force_scanned": false,
+      "pdf_jpeg_quality": 90,
+      "pdf_max_image_edge_px": 2400,
+      "pdf_max_pages": 1000,
+      "pdf_render_concurrency": 2,
+      "pdf_render_dpi": 200,
+      "preview_max_chunks": 50,
+      "preview_max_file_bytes": 10485760,
+      "preview_max_pages": 20,
+      "preview_timeout_seconds": 5.0,
+      "question_generation_enabled": false,
+      "size_unit": "chars"
+    }
+  },
+  "name": "document_processing",
+  "schema_version": "20260718_processing_trace_v1",
+  "scope": {
+    "compatibility_default": false,
+    "document_ids": [],
+    "knowledge_base_ids": [
+      "default-knowledge-base"
+    ],
+    "workspace_id": "default-workspace"
+  },
+  "source": "uploads/upload-b9758b206dba41ea8eed42b19c634b1b/规格信息/无线产品/无线ACAP/DH-EAC256.txt",
+  "spans": [
+    {
+      "_db_span_id": "1d3cc0c5d86e42f9ab03f9be8568981a",
+      "duration_ms": 39,
+      "ended_at": "2026-07-26T11:10:44.760Z",
+      "error": null,
+      "input": {
+        "file_name": "DH-EAC256.txt",
+        "file_type": "txt",
+        "parser_engine": "builtin",
+        "size": 3680,
+        "source": "uploads/upload-b9758b206dba41ea8eed42b19c634b1b/规格信息/无线产品/无线ACAP/DH-EAC256.txt"
+      },
+      "name": "load",
+      "output": {
+        "characters": 1945,
+        "doc_id": "f2d2f349b91c77b2692244311af39561",
+        "document_metadata": {},
+        "elements": 202,
+        "file_type": "txt",
+        "images": 0,
+        "parsed_markdown_file": "parsed.md",
+        "parser_diagnostics": {
+          "effective_engine": "builtin",
+          "fallback_reason": "",
+          "parse_duration_ms": 3,
+          "parser_name": "BuiltinMarkdownParser",
+          "requested_engine": "builtin",
+          "warnings": []
+        }
+      },
+      "span_id": "794ad9a6dd314cd5a94d8b2c191fbe37",
+      "started_at": "2026-07-26T11:10:44.720Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "7901c8da0a6d4d7f96d3317c5f36866a",
+      "duration_ms": 35,
+      "ended_at": "2026-07-26T11:10:44.805Z",
+      "error": null,
+      "input": {
+        "child_chunk_overlap_chars": 76,
+        "child_chunk_size_chars": 384,
+        "effective_strategy": "auto",
+        "parent_chunk_size_chars": 4096,
+        "requested_strategy": "auto"
+      },
+      "name": "chunk_strategy",
+      "output": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "chunks_file": "chunks.jsonl",
+        "lengths": {
+          "average": 555.7142857142857,
+          "maximum": 1945,
+          "minimum": 57,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "processing_version": "weknora-adaptive-v1",
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "span_id": "f51b05f68e7a4e7297dcd9f73599b935",
+      "started_at": "2026-07-26T11:10:44.770Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "5f24699c050d42629906ea37417c5a7a",
+      "duration_ms": 24841,
+      "ended_at": "2026-07-26T11:11:09.654Z",
+      "error": null,
+      "input": {
+        "by_strategy": {
+          "legacy": 7
+        },
+        "by_type": {
+          "child": 6,
+          "parent": 1
+        },
+        "chunk_count": 7,
+        "doc_id": "f2d2f349b91c77b2692244311af39561",
+        "lengths": {
+          "average": 555.7142857142857,
+          "maximum": 1945,
+          "minimum": 57,
+          "oversize_count": 1,
+          "tiny_count": 0
+        },
+        "tier_chains": [
+          [
+            "legacy"
+          ]
+        ]
+      },
+      "name": "index",
+      "output": {
+        "sqlite_chunks": 7,
+        "vector_chunks": 6
+      },
+      "span_id": "64ae8e961467401aa07919aabb37b8a8",
+      "started_at": "2026-07-26T11:10:44.813Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "116ba191a7354f8592910d6f0fbc2594",
+      "duration_ms": 44,
+      "ended_at": "2026-07-26T11:11:09.708Z",
+      "error": null,
+      "input": {
+        "caption_enabled": false,
+        "image_count": 0,
+        "ocr_enabled": false
+      },
+      "name": "multimodal",
+      "output": {
+        "image_errors": [],
+        "image_operations": 0,
+        "image_resources": 0,
+        "multimodal": {
+          "canceled": 0,
+          "completed": 0,
+          "errors": [],
+          "failed": 0,
+          "skipped": 0,
+          "total": 0
+        }
+      },
+      "span_id": "e34b88854ec540d1a7b8a498d1161e20",
+      "started_at": "2026-07-26T11:11:09.664Z",
+      "status": "completed"
+    },
+    {
+      "_db_span_id": "847efe705ebe4142869c928eb6d97f05",
+      "duration_ms": 78,
+      "ended_at": "2026-07-26T11:11:09.799Z",
+      "error": null,
+      "input": {
+        "kg_enabled": false
+      },
+      "name": "postprocess",
+      "output": {
+        "enrichment_queued": true,
+        "kg_attempted": false
+      },
+      "span_id": "e54cf613d1c6450b94a30938c966fdce",
+      "started_at": "2026-07-26T11:11:09.721Z",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-07-26T11:10:44.680Z",
+  "status": "completed",
+  "trace_dir": "data\\processing_traces\\20260726\\DH-EAC256-6ca3b2166737",
+  "trace_id": "6ca3b21667374e79a9b0af7fb5bc9310"
+}

@@ -1,0 +1,175 @@
+2026-07-19 17:13:36.475 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:13:36.487 INFO 972f896d51a34dac86c3d0f7a1dfd106 request.start client_ip=testclient content_length=51 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:13:36.488 DEBUG 972f896d51a34dac86c3d0f7a1dfd106 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "51", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:13:36.497 INFO 972f896d51a34dac86c3d0f7a1dfd106 request.end client_ip=testclient content_length=51 content_type=application/json duration_ms=9 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:13:36.502 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:13:36.965 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:13:36.976 INFO 27b3609d7ead491ebe0f39f6b6d785dc request.start client_ip=testclient content_length=48 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:13:36.976 DEBUG 27b3609d7ead491ebe0f39f6b6d785dc request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "48", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:13:36.980 INFO 27b3609d7ead491ebe0f39f6b6d785dc request.end client_ip=testclient content_length=48 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:13:36.987 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:13:37.422 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:13:37.431 INFO 8a640231d5c14ef5bbe439f4011ea7c3 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:13:37.432 DEBUG 8a640231d5c14ef5bbe439f4011ea7c3 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:13:37.436 INFO 8a640231d5c14ef5bbe439f4011ea7c3 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:13:37.437 ERROR 8a640231d5c14ef5bbe439f4011ea7c3 Chat stream failed: 智能推理暂不可用，请切换为快速问答后重试
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\main.py", line 1021, in event_gen
+    raise ValueError("智能推理暂不可用，请切换为快速问答后重试")
+ValueError: 智能推理暂不可用，请切换为快速问答后重试
+2026-07-19 17:13:37.441 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:13:37.862 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:13:37.869 INFO 00ac5b2d58f940f4af1772246b1fa39d request.start client_ip=testclient content_length=28 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:13:37.870 DEBUG 00ac5b2d58f940f4af1772246b1fa39d request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "28", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:13:37.872 INFO 00ac5b2d58f940f4af1772246b1fa39d request.end client_ip=testclient content_length=28 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:13:37.887 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:17:27.115 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:17:27.124 INFO a1b6c36a24d34de584e2adc92cb55771 request.start client_ip=testclient content_length=51 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:17:27.125 DEBUG a1b6c36a24d34de584e2adc92cb55771 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "51", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:17:27.131 INFO a1b6c36a24d34de584e2adc92cb55771 request.end client_ip=testclient content_length=51 content_type=application/json duration_ms=6 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:17:27.135 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:17:27.528 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:17:27.535 INFO b82812f3ae6a425f9b53519d4882e2da request.start client_ip=testclient content_length=48 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:17:27.535 DEBUG b82812f3ae6a425f9b53519d4882e2da request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "48", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:17:27.536 INFO b82812f3ae6a425f9b53519d4882e2da request.end client_ip=testclient content_length=48 content_type=application/json duration_ms=2 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:17:27.541 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:17:27.944 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:17:27.950 INFO 9a40a88dbdbb4710b6c6d47b7fdb8c32 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:17:27.950 DEBUG 9a40a88dbdbb4710b6c6d47b7fdb8c32 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:17:27.950 INFO 9a40a88dbdbb4710b6c6d47b7fdb8c32 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:17:27.950 ERROR 9a40a88dbdbb4710b6c6d47b7fdb8c32 Chat stream failed: 智能推理暂不可用，请切换为快速问答后重试
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\main.py", line 1021, in event_gen
+    raise ValueError("智能推理暂不可用，请切换为快速问答后重试")
+ValueError: 智能推理暂不可用，请切换为快速问答后重试
+2026-07-19 17:17:27.950 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:17:28.362 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:17:28.379 INFO 02f73fa81da9433aa83e0b3d39d6706e request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:17:28.379 DEBUG 02f73fa81da9433aa83e0b3d39d6706e request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:17:28.379 INFO 02f73fa81da9433aa83e0b3d39d6706e request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:17:28.379 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 17:17:28.780 DEBUG - Using proactor: IocpProactor
+2026-07-19 17:17:28.780 INFO 3fd5f68107934ffda007af77f5ff681d request.start client_ip=testclient content_length=28 content_type=application/json method=POST path=/chat/stream
+2026-07-19 17:17:28.780 DEBUG 3fd5f68107934ffda007af77f5ff681d request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "28", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 17:17:28.780 INFO 3fd5f68107934ffda007af77f5ff681d request.end client_ip=testclient content_length=28 content_type=application/json duration_ms=2 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 17:17:28.795 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:44:12.584 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:44:12.599 INFO b9bbcbc3f2d448c58f42464a924f17fc request.start client_ip=testclient content_length=51 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:44:12.599 DEBUG b9bbcbc3f2d448c58f42464a924f17fc request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "51", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:44:12.607 INFO b9bbcbc3f2d448c58f42464a924f17fc request.end client_ip=testclient content_length=51 content_type=application/json duration_ms=9 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:44:12.617 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:44:13.116 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:44:13.117 INFO c323d570fa7c453eb061230970ac7ef6 request.start client_ip=testclient content_length=48 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:44:13.117 DEBUG c323d570fa7c453eb061230970ac7ef6 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "48", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:44:13.117 INFO c323d570fa7c453eb061230970ac7ef6 request.end client_ip=testclient content_length=48 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:44:13.131 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:44:13.644 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:44:13.651 INFO 2f6719c7fa924c1389c296aad6bdcc2f request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:44:13.651 DEBUG 2f6719c7fa924c1389c296aad6bdcc2f request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:44:13.651 INFO 2f6719c7fa924c1389c296aad6bdcc2f request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:44:13.651 ERROR 2f6719c7fa924c1389c296aad6bdcc2f Chat stream failed: 智能推理暂不可用，请切换为快速问答后重试
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\main.py", line 1024, in event_gen
+    raise ValueError("智能推理暂不可用，请切换为快速问答后重试")
+ValueError: 智能推理暂不可用，请切换为快速问答后重试
+2026-07-19 19:44:13.664 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:44:14.194 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:44:14.197 INFO 2cc35d03e59f44e1a55c41e8521e372b request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:44:14.197 DEBUG 2cc35d03e59f44e1a55c41e8521e372b request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:44:14.208 INFO 2cc35d03e59f44e1a55c41e8521e372b request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:44:14.214 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:44:14.898 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:44:14.910 INFO be4f6b4130b2486f96c66a9264d59c41 request.start client_ip=testclient content_length=28 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:44:14.910 DEBUG be4f6b4130b2486f96c66a9264d59c41 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "28", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:44:14.923 INFO be4f6b4130b2486f96c66a9264d59c41 request.end client_ip=testclient content_length=28 content_type=application/json duration_ms=6 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:44:14.954 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:47:50.358 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:47:50.373 INFO 676d674c8b194083848ced9c96c3d71b request.start client_ip=testclient content_length=51 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:47:50.378 DEBUG 676d674c8b194083848ced9c96c3d71b request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "51", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:47:50.387 INFO 676d674c8b194083848ced9c96c3d71b request.end client_ip=testclient content_length=51 content_type=application/json duration_ms=8 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:47:50.389 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:47:50.972 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:47:50.980 INFO 25d1f61f89424aab9007d92d89672f19 request.start client_ip=testclient content_length=48 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:47:50.981 DEBUG 25d1f61f89424aab9007d92d89672f19 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "48", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:47:50.985 INFO 25d1f61f89424aab9007d92d89672f19 request.end client_ip=testclient content_length=48 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:47:50.991 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:47:51.470 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:47:51.476 INFO e53f776414e44259bb6ea21df3392e92 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:47:51.476 DEBUG e53f776414e44259bb6ea21df3392e92 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:47:51.476 INFO e53f776414e44259bb6ea21df3392e92 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:47:51.483 ERROR e53f776414e44259bb6ea21df3392e92 Chat stream failed: 智能推理暂不可用，请切换为快速问答后重试
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\main.py", line 1026, in event_gen
+    raise ValueError("智能推理暂不可用，请切换为快速问答后重试")
+ValueError: 智能推理暂不可用，请切换为快速问答后重试
+2026-07-19 19:47:51.488 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:47:52.071 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:47:52.080 INFO 48c801adf26644a1aef4afe20d6b17cc request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:47:52.080 DEBUG 48c801adf26644a1aef4afe20d6b17cc request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:47:52.085 INFO 48c801adf26644a1aef4afe20d6b17cc request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=5 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:47:52.095 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:47:52.617 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:47:52.627 INFO f1f5122b00514686941f75a7c5f5938e request.start client_ip=testclient content_length=28 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:47:52.628 DEBUG f1f5122b00514686941f75a7c5f5938e request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "28", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:47:52.632 INFO f1f5122b00514686941f75a7c5f5938e request.end client_ip=testclient content_length=28 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:47:52.656 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:49:24.135 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:49:24.143 INFO 4807731672fa4094b3ba1cd2cffbdbc2 request.start client_ip=testclient content_length=51 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:49:24.143 DEBUG 4807731672fa4094b3ba1cd2cffbdbc2 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "51", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:49:24.150 INFO 4807731672fa4094b3ba1cd2cffbdbc2 request.end client_ip=testclient content_length=51 content_type=application/json duration_ms=7 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:49:24.154 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:49:24.587 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:49:24.594 INFO 8de3880951094f82b97389c3bfcb3abb request.start client_ip=testclient content_length=48 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:49:24.595 DEBUG 8de3880951094f82b97389c3bfcb3abb request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "48", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:49:24.597 INFO 8de3880951094f82b97389c3bfcb3abb request.end client_ip=testclient content_length=48 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:49:24.602 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:49:25.000 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:49:25.007 INFO 7734a00e9cda4e3bb2b3a717641bd704 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:49:25.007 DEBUG 7734a00e9cda4e3bb2b3a717641bd704 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:49:25.011 INFO 7734a00e9cda4e3bb2b3a717641bd704 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:49:25.012 ERROR 7734a00e9cda4e3bb2b3a717641bd704 Chat stream failed: 智能推理暂不可用，请切换为快速问答后重试
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\main.py", line 1026, in event_gen
+    raise ValueError("智能推理暂不可用，请切换为快速问答后重试")
+ValueError: 智能推理暂不可用，请切换为快速问答后重试
+2026-07-19 19:49:25.016 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:49:25.439 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:49:25.446 INFO 9c89e0ded8ba4d8caee9ad60606cd559 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:49:25.447 DEBUG 9c89e0ded8ba4d8caee9ad60606cd559 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:49:25.449 INFO 9c89e0ded8ba4d8caee9ad60606cd559 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:49:25.455 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:49:25.911 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:49:25.918 INFO cd119875088b4a6e8f025c5fa698a146 request.start client_ip=testclient content_length=28 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:49:25.918 DEBUG cd119875088b4a6e8f025c5fa698a146 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "28", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:49:25.922 INFO cd119875088b4a6e8f025c5fa698a146 request.end client_ip=testclient content_length=28 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:49:25.938 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:50:36.503 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:50:36.519 INFO 14b0c8e716ca405aa99e867265e2a85b request.start client_ip=testclient content_length=51 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:50:36.519 DEBUG 14b0c8e716ca405aa99e867265e2a85b request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "51", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:50:36.523 INFO 14b0c8e716ca405aa99e867265e2a85b request.end client_ip=testclient content_length=51 content_type=application/json duration_ms=6 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:50:36.523 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:50:36.924 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:50:36.929 INFO af729efeceeb41f8923e374d6dd84945 request.start client_ip=testclient content_length=48 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:50:36.929 DEBUG af729efeceeb41f8923e374d6dd84945 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "48", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:50:36.929 INFO af729efeceeb41f8923e374d6dd84945 request.end client_ip=testclient content_length=48 content_type=application/json duration_ms=2 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:50:36.929 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:50:37.356 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:50:37.356 INFO 81bd1279fa024ff28e1580d230a54c90 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:50:37.356 DEBUG 81bd1279fa024ff28e1580d230a54c90 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:50:37.372 INFO 81bd1279fa024ff28e1580d230a54c90 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=3 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:50:37.372 ERROR 81bd1279fa024ff28e1580d230a54c90 Chat stream failed: 智能推理暂不可用，请切换为快速问答后重试
+Traceback (most recent call last):
+  File "D:\python_project\new-rag-project\backend\app\main.py", line 1026, in event_gen
+    raise ValueError("智能推理暂不可用，请切换为快速问答后重试")
+ValueError: 智能推理暂不可用，请切换为快速问答后重试
+2026-07-19 19:50:37.372 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:50:37.773 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:50:37.789 INFO 494fa312de6447c4801ed2aba84e6d09 request.start client_ip=testclient content_length=52 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:50:37.789 DEBUG 494fa312de6447c4801ed2aba84e6d09 request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "52", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:50:37.789 INFO 494fa312de6447c4801ed2aba84e6d09 request.end client_ip=testclient content_length=52 content_type=application/json duration_ms=4 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:50:37.789 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"
+2026-07-19 19:50:38.197 DEBUG - Using proactor: IocpProactor
+2026-07-19 19:50:38.207 INFO 877786c6e09640b0a8ba4ab96374f0ea request.start client_ip=testclient content_length=28 content_type=application/json method=POST path=/chat/stream
+2026-07-19 19:50:38.209 DEBUG 877786c6e09640b0a8ba4ab96374f0ea request.headers headers={"accept": "*/*", "accept-encoding": "gzip, deflate, zstd", "connection": "keep-alive", "content-length": "28", "content-type": "application/json", "host": "testserver", "user-agent": "testclient"}
+2026-07-19 19:50:38.214 INFO 877786c6e09640b0a8ba4ab96374f0ea request.end client_ip=testclient content_length=28 content_type=application/json duration_ms=5 method=POST path=/chat/stream response_content_type=text/event-stream; charset=utf-8 status_code=200
+2026-07-19 19:50:38.235 INFO - HTTP Request: POST http://testserver/chat/stream "HTTP/1.1 200 OK"

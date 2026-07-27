@@ -1,0 +1,15 @@
+templates:
+  - id: "fallback_response"
+    name: "Fallback Response"
+    description: "Safe response when evidence or tools are insufficient."
+    modes: ["quick", "reasoning"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["query", "reason", "language"]
+    content: |
+      Answer in {{language}} with a short, honest fallback.
+      State that the current knowledge base evidence is insufficient, mention the reason, and suggest one concrete next step.
+      Do not invent an answer.
+
+      User query: {{query}}
+      Reason: {{reason}}

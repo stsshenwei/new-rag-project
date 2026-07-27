@@ -1,0 +1,77 @@
+<h2>上传文件夹与解析进度方案</h2>
+<p class="subtitle">请选择你更希望落地的知识库上传体验。两个方案都支持选择单文件、多个文件、整个文件夹，并保留多层级目录。</p>
+
+<div class="cards">
+  <div class="card" data-choice="inline" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup" style="margin:0">
+        <div class="mockup-header">知识库</div>
+        <div class="mockup-body">
+          <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:14px">
+            <div>
+              <div style="font-weight:700;font-size:18px">知识库</div>
+              <div style="color:#6b7280;font-size:12px">上传、解析和查看资料</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="mock-button">上传文件</button>
+              <button class="mock-button">上传文件夹</button>
+            </div>
+          </div>
+          <div style="border:1px solid #d6dde8;border-radius:8px;padding:12px;margin-bottom:14px;background:#f8fafc">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px">
+              <strong>正在上传：产品资料包</strong>
+              <span>7 / 18</span>
+            </div>
+            <div style="height:8px;border-radius:999px;background:#e5e7eb;overflow:hidden">
+              <div style="height:100%;width:42%;background:#2563eb"></div>
+            </div>
+            <div style="font-size:12px;color:#6b7280;margin-top:8px">解析中：二级目录/安装手册.pdf</div>
+          </div>
+          <div class="placeholder" style="height:130px">文档列表继续显示，进度作为顶部任务条出现</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. 页内任务条</h3>
+      <p>保留当前知识库列表为主界面，上传时在顶部显示总体进度和当前文件。改动小、学习成本低，适合先快速做扎实。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="workspace" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup" style="margin:0">
+        <div class="mockup-header">上传任务</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:180px 1fr;gap:14px">
+            <div style="border-right:1px solid #e5e7eb;padding-right:12px">
+              <button class="mock-button" style="width:100%;margin-bottom:10px">选择文件夹</button>
+              <button class="mock-button" style="width:100%">选择文件</button>
+              <div style="font-size:12px;color:#6b7280;margin-top:14px">本次任务：18 个文件<br>支持 4 层目录</div>
+            </div>
+            <div>
+              <div style="font-weight:700;margin-bottom:8px">产品资料包</div>
+              <div style="height:8px;border-radius:999px;background:#e5e7eb;overflow:hidden;margin-bottom:12px">
+                <div style="height:100%;width:68%;background:#0f766e"></div>
+              </div>
+              <div style="display:grid;gap:6px;font-size:12px">
+                <div>已完成　一级/概览.md</div>
+                <div>已完成　一级/二级/参数.xlsx</div>
+                <div>解析中　一级/二级/三级/安装手册.pdf</div>
+                <div>等待中　一级/二级/三级/四级/FAQ.docx</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 独立上传工作区</h3>
+      <p>把上传任务做成更完整的工作台，可查看每个文件状态、目录路径和错误。体验更强，但前后端状态设计会更复杂。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>我建议先做 A</h3>
+  <p>这次需求核心是能上传文件夹、保留多层级路径、批量解析并看见进度。A 可以覆盖这些需求，同时不大改现有知识库页。后续如果需要任务历史和断点重试，再演进成 B。</p>
+</div>

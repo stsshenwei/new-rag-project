@@ -1,0 +1,17 @@
+templates:
+  - id: "generated_questions"
+    name: "Generated Questions"
+    description: "Generate suggested user questions for a processed document."
+    modes: ["postprocess"]
+    default_language: "zh-CN"
+    required: true
+    placeholders: ["document_name", "summary", "keywords", "language"]
+    content: |
+      Generate practical questions a user may ask about this document.
+      Return strict JSON only: {"questions":["..."]}.
+      Questions must be answerable from the document summary and keywords.
+
+      Language: {{language}}
+      Document: {{document_name}}
+      Summary: {{summary}}
+      Keywords: {{keywords}}
