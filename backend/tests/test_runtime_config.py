@@ -288,26 +288,6 @@ class RuntimeConfigTests(unittest.TestCase):
 
         self.assertIsNone(service.graph_retriever)
 
-    def test_runtime_config_loads_query_terms_path(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            terms_path = Path(tmpdir) / "terms.yaml"
-            terms_path.write_text(
-                """
-terms:
-  电口:
-    canonical: RJ-45
-    aliases:
-      - RJ45
-""",
-                encoding="utf-8",
-            )
-
-            service = self.import_main_with_env({"QUERY_TERMS_PATH": str(terms_path)})
-
-        result = service.query_understanding.understand("8个电口")
-
-        self.assertIn("RJ-45", result.expanded_terms)
-
     def test_runtime_config_reads_yaml_defaults_when_env_absent(self):
         sys.modules.pop("app.main", None)
         with tempfile.TemporaryDirectory() as tmpdir:

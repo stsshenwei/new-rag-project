@@ -1,7 +1,5 @@
 import json
-import tempfile
 import unittest
-from pathlib import Path
 
 from app.services.query_understanding import (
     OpenAIQueryIntentClient,
@@ -9,8 +7,6 @@ from app.services.query_understanding import (
     QueryUnderstandingConfig,
     QueryUnderstandingResult,
     QueryUnderstandingService,
-    TerminologyDictionary,
-    load_terminology_dictionary,
 )
 from app.services.agent_prompt_templates import PromptTemplateCatalog
 
@@ -43,15 +39,14 @@ class FakeIntentClient:
 
 
 class QueryUnderstandingTests(unittest.TestCase):
-    def test_olt_splitter_selection_expands_capacity_and_configuration_queries(self):
+    def test_enabled_understanding_does_not_add_domain_specific_queries_without_llm_rewrite(self):
         service = QueryUnderstandingService(config=QueryUnderstandingConfig(enabled=True, max_queries=5))
 
         result = service.understand("我现在需要一个能接28个分光器的OLT帮我选一款")
 
-        self.assertIn("OLT 至少28个PON口 GPON接口容量", result.retrieval_queries)
-        self.assertIn("32口盒式OLT GPON口", result.retrieval_queries)
-        self.assertIn("OLT 业务槽位 GPON业务板卡 PON口数量", result.retrieval_queries)
-        self.assertLessEqual(len(result.retrieval_queries), 5)
+        self.assertEqual(["我现在需要一个能接28个分光器的OLT帮我选一款"], result.retrieval_queries)
+        self.assertEqual([], result.expanded_terms)
+        self.assertEqual([], result.applied_terms)
 
     def test_result_has_defaults_and_serializes(self):
         service = QueryUnderstandingService(config=QueryUnderstandingConfig(enabled=False))
@@ -66,59 +61,8 @@ class QueryUnderstandingTests(unittest.TestCase):
         self.assertEqual("8个电口", serialized["original_query"])
         json.dumps(serialized, ensure_ascii=False)
 
-    def test_dictionary_loader_reads_terms_and_aliases(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            path = Path(tmpdir) / "terms.yaml"
-            path.write_text(
-                """
-terms:
-  电口:
-    canonical: RJ-45
-    aliases:
-      - RJ45
-      - 以太网电接口
-""".strip(),
-                encoding="utf-8",
-            )
-
-            dictionary = load_terminology_dictionary(path)
-
-        self.assertEqual("RJ-45", dictionary.entries["电口"].canonical)
-        self.assertIn("RJ45", dictionary.entries["电口"].aliases)
-
-    def test_dictionary_loader_missing_file_returns_empty_dictionary(self):
-        dictionary = load_terminology_dictionary(Path(tempfile.mkdtemp()) / "missing.yaml")
-
-        self.assertEqual({}, dictionary.entries)
-
-    def test_normalizes_electric_port_to_rj45_variants(self):
-        dictionary = TerminologyDictionary.from_mapping(
-            {
-                "电口": {
-                    "canonical": "RJ-45",
-                    "aliases": ["RJ45", "以太网电接口", "copper Ethernet port"],
-                }
-            }
-        )
-        service = QueryUnderstandingService(
-            dictionary=dictionary,
-            config=QueryUnderstandingConfig(enabled=True, max_queries=5),
-        )
-
-        result = service.understand("8个电口")
-
-        self.assertIn("RJ-45", result.normalized_query)
-        self.assertIn("RJ45", result.expanded_terms)
-        self.assertIn({"term": "电口", "canonical": "RJ-45"}, result.applied_terms)
-        self.assertIn("8个RJ-45", result.retrieval_queries)
-        self.assertLessEqual(len(result.retrieval_queries), 5)
-
-    def test_disabled_understanding_uses_raw_query_without_dictionary(self):
-        dictionary = TerminologyDictionary.from_mapping({"电口": {"canonical": "RJ-45", "aliases": ["RJ45"]}})
-        service = QueryUnderstandingService(
-            dictionary=dictionary,
-            config=QueryUnderstandingConfig(enabled=False, max_queries=5),
-        )
+    def test_disabled_understanding_uses_raw_query(self):
+        service = QueryUnderstandingService(config=QueryUnderstandingConfig(enabled=False, max_queries=5))
 
         result = service.understand("8个电口")
 
@@ -126,42 +70,20 @@ terms:
         self.assertEqual(["8个电口"], result.retrieval_queries)
         self.assertEqual([], result.applied_terms)
 
-    def test_invalid_dictionary_entries_are_ignored(self):
-        dictionary = TerminologyDictionary.from_mapping({"电口": {"aliases": ["RJ45"]}, "光口": "SFP"})
+    def test_llm_retrieval_queries_are_deduplicated_and_capped(self):
         service = QueryUnderstandingService(
-            dictionary=dictionary,
-            config=QueryUnderstandingConfig(enabled=True),
+            rewrite_client=FakeRewriteClient({"queries": ["variant-a", "variant-a", "variant-b", "variant-c"]}),
+            config=QueryUnderstandingConfig(enabled=True, rewrite_enabled=True, max_queries=3),
         )
 
-        result = service.understand("8个电口")
-
-        self.assertEqual("8个电口", result.normalized_query)
-        self.assertEqual(["8个电口"], result.retrieval_queries)
-
-    def test_retrieval_queries_are_deduplicated_and_capped(self):
-        dictionary = TerminologyDictionary.from_mapping(
-            {
-                "电口": {
-                    "canonical": "RJ-45",
-                    "aliases": ["RJ-45", "RJ45", "以太网电接口", "copper Ethernet port"],
-                }
-            }
-        )
-        service = QueryUnderstandingService(
-            dictionary=dictionary,
-            config=QueryUnderstandingConfig(enabled=True, max_queries=3),
-        )
-
-        result = service.understand("8个电口")
+        result = service.understand("original")
 
         self.assertEqual(len(result.retrieval_queries), len(set(result.retrieval_queries)))
         self.assertEqual(3, len(result.retrieval_queries))
 
     def test_llm_rewrite_adds_valid_queries(self):
         rewrite_client = FakeRewriteClient({"queries": ["8个RJ45交换机", "8口以太网接口"]})
-        dictionary = TerminologyDictionary.from_mapping({"电口": {"canonical": "RJ-45", "aliases": ["RJ45"]}})
         service = QueryUnderstandingService(
-            dictionary=dictionary,
             rewrite_client=rewrite_client,
             config=QueryUnderstandingConfig(enabled=True, rewrite_enabled=True, max_queries=5),
         )
@@ -170,14 +92,12 @@ terms:
 
         self.assertEqual(1, len(rewrite_client.calls))
         self.assertIn("8个RJ45交换机", result.retrieval_queries)
-        self.assertIn("RJ-45", result.expanded_terms)
-        self.assertEqual("mixed", result.source)
+        self.assertEqual([], result.expanded_terms)
+        self.assertEqual("llm", result.source)
 
     def test_invalid_llm_rewrite_is_ignored(self):
         rewrite_client = FakeRewriteClient("not-json")
-        dictionary = TerminologyDictionary.from_mapping({"电口": {"canonical": "RJ-45", "aliases": ["RJ45"]}})
         service = QueryUnderstandingService(
-            dictionary=dictionary,
             rewrite_client=rewrite_client,
             config=QueryUnderstandingConfig(enabled=True, rewrite_enabled=True, max_queries=5),
         )
@@ -185,7 +105,7 @@ terms:
         result = service.understand("8个电口")
 
         self.assertNotIn("not-json", result.retrieval_queries)
-        self.assertIn("8个RJ-45", result.retrieval_queries)
+        self.assertEqual(["8个电口"], result.retrieval_queries)
 
 
     def test_prompt_backed_intent_detection_updates_result(self):

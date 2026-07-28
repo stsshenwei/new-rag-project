@@ -32,9 +32,6 @@ class RawRAGTool:
         try:
             child_hits = _call_scoped(self.rag_service, "hybrid_retrieve_hits", question, scope=scope)
             hits = _call_scoped(self.rag_service, "recall_parent_hits", child_hits, scope=scope)
-            constraint_filter = getattr(self.rag_service, "filter_hits_for_question_constraints", None)
-            if callable(constraint_filter):
-                hits = constraint_filter(question, hits)
             citations = self.rag_service.extract_sources(hits)
             items = [_hit_to_evidence_item(hit, self.name, index) for index, hit in enumerate(hits)]
             used_chunks = _used_chunks_from_hits(hits)

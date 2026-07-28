@@ -1,135 +1,106 @@
-# RAG Fullstack (Next.js + FastAPI)
+# New RAG Project
 
-文档处理默认使用 WeKnora 风格的 `builtin` 混合 PDF 解析（`pypdfium2`）和自适应切片，自动降级顺序固定为 `heading -> heuristic -> legacy/recursive`。
+一个面向企业知识库问答的全栈 RAG 系统。项目使用 Next.js 构建前端交互界面，FastAPI 承载文档处理、检索、智能推理、流式回答、知识库管理和评测能力。
 
-主要配置：`PARSER_ENGINE=builtin`、`PDF_FORCE_SCANNED=false`、`PDF_RENDER_DPI=200`、`PDF_JPEG_QUALITY=90`、`PDF_MAX_PAGES=1000`、`CHUNK_STRATEGY=auto`、`PARENT_CHUNK_SIZE_CHARS=4096`、`CHILD_CHUNK_SIZE_CHARS=384`、`CHILD_CHUNK_OVERLAP_CHARS=76`。
+## 项目优势
 
-新架构不读取或迁移旧版数据库。技术切换时必须通过带环境确认的维护命令一次性删除全部 SQLite、FTS、Milvus、Neo4j 和旧媒体数据。
+- **证据优先的回答机制**：回答必须来自检索到的知识库证据；证据不足时明确说明无法确定，减少模型凭空补全。
+- **混合检索能力**：支持向量检索、Milvus BM25、SQLite FTS5 关键词检索、RRF 融合、可选重排和父块召回，兼顾语义召回与精确匹配。
+- **智能推理检索**：Reasoning 模式可先用关键词锚定实体和同义表达，再进行语义扩展，并要求阅读全文证据后再生成最终答案。
+- **多知识库隔离**：支持 workspace 与 knowledge base 范围选择，旧客户端未显式传范围时只访问默认知识库，不会误检索全部数据。
+- **文档处理可追踪**：上传、解析、切片、索引、OCR/图像处理和后处理阶段都有可审计状态；本地 trace 文件便于定位失败原因。
+- **分阶段上传**：文件选择后先进入待处理批次，只有用户确认后才解析、切片、嵌入、索引或调用外部 Provider。
+- **产品筛选更稳健**：对“24 个光口交换机”“8 个电口控制器”等规格型问题，检索后会做同源约束过滤，避免把不满足硬性条件的型号混入答案。
+- **流式交互体验**：`/chat/stream` 使用 SSE 实时返回来源、执行摘要、回答 token、引用校验和完成事件。
+- **可观测与可评测**：支持请求级日志、`X-Trace-ID`、可选 Langfuse、处理 trace、RAG/GraphRAG/Agentic Retrieval 离线评测。
+- **安全边界清晰**：上传路径、知识库范围、日志脱敏、引用校验、工具输出和前端执行摘要都有明确边界，避免泄露内部提示词、密钥或非授权文档。
 
-## Knowledge Management Staged Upload
+## 技术栈
 
-The knowledge management page uses a staged upload workflow. Selecting files or folders only opens a pending upload dialog; it does not parse, index, embed, enrich, or call external providers until the user confirms processing.
-
-Staged upload endpoints:
-
-- `POST /knowledge-bases/{knowledge_base_id}/upload-batches`
-- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/files`
-- `PATCH /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/settings`
-- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/confirm`
-- `GET /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}`
-- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/files/{file_id}/retry`
-- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/cancel`
-
-Document workspace filters are available on `GET /documents`: `knowledge_base_id`, `q`, `tag`, `file_type`, `status`, `source`, `created_from`, and `created_to`.
-
-`POST /documents/upload` remains as a legacy compatibility shortcut. New knowledge-management UI uploads should use the staged endpoints.
-
-## Weknora-Aligned Processing Runtime
-
-Core document processing now has an optional durable worker:
-
-```env
-PROCESSING_WORKER_ENABLED=false
-PROCESSING_WORKER_ID=local-processing-worker
-PROCESSING_WORKER_POLL_INTERVAL_SECONDS=1.0
-PROCESSING_WORKER_LEASE_TIMEOUT_SECONDS=300
-PROCESSING_WORKER_DEFAULT_MAX_ATTEMPTS=3
-PROCESSING_WORKER_RETRY_BACKOFF_SECONDS=10,30,120
-PROCESSING_TRACE_ENABLED=true
-PROCESSING_TRACE_DIR=./data/processing_traces
-```
-
-When the worker is enabled, upload confirmation writes durable `document_processing_task` rows first, then the worker performs parsing, chunking, vector indexing, multimodal processing, and postprocess work with retries and dead-letter records. When disabled, upload confirmation keeps the existing FastAPI background-task compatibility path.
-
-The Trace drawer reads SQLite `knowledge_processing_spans` as the primary root/stage/subspan/generation tree. Local files such as `report.md`, `parsed.md`, `chunks.jsonl`, and `chunks_preview.md` are supplemental evidence for manual debugging.
-
-Prompt templates live in `backend/config/prompt_templates/`. Quick answer and intelligent reasoning compose the user question, selected knowledge base, conversation context, retrieved context, tools, and skills through the catalog instead of scattered hardcoded prompts.
+- Frontend: Next.js App Router
+- Backend: FastAPI
+- Metadata store: SQLite
+- Vector / BM25 store: Milvus
+- Keyword fallback: SQLite FTS5
+- Optional graph store: Neo4j
+- Optional observability: Langfuse
+- LLM / embedding provider: OpenAI-compatible API
 
 ## 项目结构
 
-- `frontend`: Next.js 对话助手、知识库目录和范围选择
-- `backend`: FastAPI RAG 服务（SQLite + Milvus + 可选 Neo4j + Agentic Retrieval）
+```text
+new-rag-project/
+  frontend/                 Next.js 前端
+  backend/                  FastAPI 后端
+    app/
+      main.py               API 入口与服务装配
+      services/             RAG、检索、Agent、知识库、评测等核心服务
+      models/               运行时配置与领域模型
+    config/prompt_templates/ Prompt 模板
+    data/                   默认知识文件、上传文件、反馈文件
+    evalsets/               可选评测集
+  docs/                     架构、开发、API 与设计文档
+  openspec/                 变更设计与规格文档
+```
 
-## 1) 启动后端
+## 快速启动
 
-```bash
+### 1. 启动后端
+
+```powershell
 cd backend
 python -m venv .venv
-. .venv/Scripts/activate  # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 copy .env.example .env
-# 填入 OPENAI_API_KEY
+```
+
+在 `backend/.env` 中至少配置：
+
+```env
+OPENAI_API_KEY=your-api-key
+OPENAI_CHAT_MODEL=gpt-4o-mini
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+```
+
+启动服务：
+
+```powershell
 uvicorn app.main:app --reload --port 8000
 ```
 
-### Backend observability logs
-
-The backend can write request-scoped logs to stdout and a file. Each HTTP response includes `X-Trace-ID`; use that value to search the log when a request fails.
-
-```env
-LOG_LEVEL=debug
-LOG_PATH=log/app.log
-LOG_FORMAT=%d %level %traceId %msg
-```
-
-PowerShell example:
+健康检查：
 
 ```powershell
-$env:LOG_LEVEL="debug"
-$env:LOG_PATH="log/app.log"
-$env:LOG_FORMAT="%d %level %traceId %msg"
+curl http://localhost:8000/health
 ```
 
-Troubleshooting flow:
+### 2. 启动前端
 
-1. Reproduce the failing request.
-2. Copy `X-Trace-ID` from the response headers.
-3. Search `backend/log/app.log` for that trace ID.
-4. Inspect `request.start`, component flow logs, `request.end`, and any traceback logged with the same trace ID.
-
-Logs intentionally redact sensitive fields such as `Authorization`, cookies, tokens, API keys, passwords, and secrets. Binary uploads, file downloads, and SSE streams are summarized rather than fully logged.
-
-### Local Langfuse observability
-
-Langfuse is optional and fail-open. Local request logs, SQLite processing spans, and local trace files continue to work when Langfuse is disabled or unreachable. To connect a local Langfuse instance:
-
-```env
-LANGFUSE_ENABLED=true
-LANGFUSE_BASE_URL=http://localhost:3001
-LANGFUSE_PUBLIC_KEY=pk-lf-...
-LANGFUSE_SECRET_KEY=sk-lf-...
-LANGFUSE_ENVIRONMENT=local
-LANGFUSE_DEBUG=true
-```
-
-`LANGFUSE_BASE_URL` is the preferred local setting. `LANGFUSE_HOST` remains supported as a compatibility alias when `LANGFUSE_BASE_URL` is empty. Check `GET /observability/status` or `/health` to confirm whether the backend sees Langfuse as enabled, configured, package-available, initialized, or failed.
-
-入库（把 `backend/data` 下文件向量化）:
-
-```bash
-curl -X POST http://localhost:8000/ingest
-```
-
-## 2) 启动前端
-
-```bash
+```powershell
 cd frontend
 npm install
 copy .env.local.example .env.local
 npm run dev
 ```
 
-浏览器打开: `http://localhost:3000`
+浏览器打开：
 
-## 3) 流式交互
+```text
+http://localhost:3000
+```
 
-- 前端请求 `POST /chat/stream`
-- 后端先做向量检索，再拼接提示词调用大模型
-- 返回 `text/event-stream`，前端实时拼接 token
+### 3. 手动入库
 
-## 4) 文档来源
+将知识文件放入 `backend/data/` 后执行：
 
-默认读取 `backend/data` 下的:
+```powershell
+curl -X POST http://localhost:8000/ingest
+```
+
+## 支持的知识文件
+
+默认支持以下文件类型：
 
 - `.txt`
 - `.md`
@@ -142,105 +113,216 @@ npm run dev
 - `.xlsx`
 - `.pdf`
 
-## Milvus / Docling storage update
+PDF、Office、表格、Markdown 和 HTML 文档会进入统一的解析、切片、索引流程。大文件和复杂文档建议通过知识库页面的分阶段上传流程处理。
 
-The active RAG store uses SQLite + Milvus:
+## 核心能力
 
-- SQLite stores `document` and `document_chunk` metadata at `METADATA_DB_PATH` or `./vector_db/rag_metadata.sqlite3`.
-- Milvus stores child/table chunk vectors in `MILVUS_COLLECTION` or `rag_chunk_vectors`.
-- Milvus connects with `MILVUS_URI` defaulting to `http://127.0.0.1:19530` and `MILVUS_TOKEN` defaulting to `root:Milvus`; do not use `localhost` for the Milvus URI.
-- Chroma is legacy data only; do not delete `backend/chroma_db/` unless cleanup is explicitly requested.
-- PDF and DOCX parsing prefer Docling. Upload supports PDF, DOCX, HTML, Excel, and Markdown.
+### 知识库管理
 
-## Agentic Retrieval
+知识库页面支持：
 
-`/rag/query` now has optional enterprise response fields:
+- 创建和管理多个 Document 知识库
+- 上传文件或文件夹
+- 查看处理状态
+- 预览文档
+- 按知识库范围发起对话
+- 对失败文档进行重试
 
-- `agent_trace`
-- `tool_calls`
-- `evidence_summary`
+分阶段上传 API：
 
-The feature is default-disabled with `AGENTIC_RETRIEVAL_ENABLED=false`, so existing Raw RAG query behavior stays intact. Enable it to route questions through the finite-state Agentic Retrieval workflow that combines Raw RAG, SQLite FTS5 keyword search, and GraphRetriever evidence with citation verification.
+- `POST /knowledge-bases/{knowledge_base_id}/upload-batches`
+- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/files`
+- `PATCH /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/settings`
+- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/confirm`
+- `GET /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}`
+- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/files/{file_id}/retry`
+- `POST /knowledge-bases/{knowledge_base_id}/upload-batches/{batch_id}/cancel`
 
-Optional stream trace events are controlled separately with `AGENT_TRACE_STREAM_ENABLED=true`; existing `/chat/stream` SSE events remain compatible.
+`POST /documents/upload` 仍保留为兼容接口，新知识库管理页面推荐使用分阶段上传 API。
 
-To make the chat stream itself use the finite-state Agentic Retrieval workflow, enable:
+### 检索与回答
 
-```env
-CHAT_AGENTIC_WORKFLOW_ENABLED=true
+默认检索流程：
+
+```text
+用户问题
+  -> 查询理解与术语扩展
+  -> 向量检索 / BM25 / FTS5
+  -> RRF 融合与去重
+  -> 可选重排
+  -> 父块和上下文召回
+  -> 规格约束过滤
+  -> 构造提示词
+  -> 流式生成答案
+  -> 引用与证据校验
 ```
 
-Then `/chat/stream` keeps the old `conversation_id`, `sources`, `reasoning`, `token`, `memory_updated`, and `[DONE]` events, and can additionally emit `agent_trace`, `tool_call`, `tool_observation`, `evidence_summary`, and `citation_verification` events before answer tokens.
+对产品、型号、端口、参数类问题，系统会尽量保证型号、参数、端口数、场景建议来自同一产品或同一来源证据，避免跨文档拼接属性。
 
-## Enterprise Evaluation
+### 智能推理模式
 
-The backend includes an optional evaluation suite for replaying curated RAG, GraphRAG, and Agentic Retrieval questions. Evalsets live outside the retrievable corpus, defaulting to `backend/evalsets`, and reports default to the vector-store `eval_reports` directory.
+Reasoning 模式适合复杂检索、对比、选型、影响分析、故障排查和多轮证据补全。它支持：
 
-Start a run:
+- 使用 LLM 生成同义词、别名、英文名、历史名称和动作时间词作为检索提示
+- 默认先进行关键词锚定，再进行语义扩展
+- 工具返回候选后必须阅读全文或文档信息
+- 证据不足时进行有限补救检索
+- 对外只展示可审计摘要，不展示隐藏推理链或原始工具参数
 
-```bash
-curl -X POST http://localhost:8000/eval/runs \
-  -H "Content-Type: application/json" \
+相关开关：
+
+```env
+AGENT_RUNTIME_ENABLED=true
+REASONING_LLM_GREP_FIRST_ENABLED=true
+QUICK_LLM_GREP_FIRST_ENABLED=false
+AGENT_TRACE_STREAM_ENABLED=true
+```
+
+### 流式聊天
+
+前端请求：
+
+```text
+POST /chat/stream
+```
+
+流式事件包含：
+
+- `conversation_id`
+- `sources`
+- `reasoning`
+- `agent_trace`
+- `tool_call`
+- `tool_observation`
+- `evidence_summary`
+- `citation_verification`
+- `token`
+- `memory_updated`
+- `[DONE]`
+
+旧客户端仍可只消费 `sources`、`reasoning`、`token` 和 `[DONE]`。
+
+### 可观测性
+
+后端支持请求级日志，每个响应会带 `X-Trace-ID`：
+
+```env
+LOG_LEVEL=debug
+LOG_PATH=log/app.log
+LOG_FORMAT=%d %level %traceId %msg
+```
+
+排查流程：
+
+1. 复现请求。
+2. 从响应头复制 `X-Trace-ID`。
+3. 在 `backend/log/app.log` 中搜索该 trace id。
+4. 查看 `request.start`、组件日志、`request.end` 和同 trace id 的异常堆栈。
+
+日志会脱敏 `Authorization`、cookie、token、API key、password、secret 等敏感字段。二进制上传、文件下载和 SSE 流只记录摘要。
+
+### Langfuse
+
+Langfuse 是可选能力，失败时不会影响本地日志、SQLite 处理 span 和本地 trace 文件：
+
+```env
+LANGFUSE_ENABLED=true
+LANGFUSE_BASE_URL=http://localhost:3001
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_ENVIRONMENT=local
+LANGFUSE_DEBUG=true
+```
+
+可通过 `GET /observability/status` 或 `/health` 检查连接状态。
+
+### 企业评测
+
+后端提供可选评测套件，用于回放 RAG、GraphRAG 和 Agentic Retrieval 问题。评测集默认位于 `backend/evalsets`，报告默认写入向量存储目录下的 `eval_reports`。
+
+启动评测：
+
+```powershell
+curl -X POST http://localhost:8000/eval/runs `
+  -H "Content-Type: application/json" `
   -d "{\"dataset_path\":\"sample_enterprise_eval.json\"}"
 ```
 
-Inspect runs:
+查看评测：
 
-```bash
+```powershell
 curl http://localhost:8000/eval/runs
 curl http://localhost:8000/eval/runs/<run_id>
 curl http://localhost:8000/eval/runs/<run_id>/results
 ```
 
-## 多知识库与文档概要
-
-知识管理页现在以 workspace 下的知识库目录为入口，支持创建多个 Document 知识库、进入详情后上传/预览文档、查看处理状态，并从详情页预选知识库开始聊天。
-
-兼容规则：旧客户端未传 `knowledge_base_id` 或 `knowledge_base_ids` 时，只访问 `DEFAULT_KNOWLEDGE_BASE_ID`，不会自动检索全部知识库。
-
-主要配置：
+## 关键配置
 
 ```env
 DEFAULT_WORKSPACE_ID=default-workspace
 DEFAULT_WORKSPACE_NAME=默认工作空间
 DEFAULT_KNOWLEDGE_BASE_ID=default-knowledge-base
 DEFAULT_KNOWLEDGE_BASE_NAME=默认知识库
+
+METADATA_DB_PATH=./vector_db/rag_metadata.sqlite3
+MILVUS_URI=http://127.0.0.1:19530
+MILVUS_TOKEN=root:Milvus
+MILVUS_COLLECTION=rag_chunk_vectors
+MILVUS_BM25_ENABLED=false
+
+PROCESSING_WORKER_ENABLED=false
+PROCESSING_TRACE_ENABLED=true
+PROCESSING_TRACE_DIR=./data/processing_traces
+
 DOCUMENT_ENRICHMENT_ENABLED=false
 DOCUMENT_ENRICHMENT_MODEL=gpt-4o-mini
 DOCUMENT_ENRICHMENT_ASYNC=true
 DOCUMENT_ENRICHMENT_MAX_BATCH_TOKENS=6000
 DOCUMENT_ENRICHMENT_MAX_SUMMARY_CHARS=1200
 DOCUMENT_ENRICHMENT_MAX_RETRIES=2
+
+KG_EXTRACTION_ENABLED=false
+GRAPH_RETRIEVER_ENABLED=false
+AGENTIC_RETRIEVAL_ENABLED=false
+CHAT_AGENTIC_WORKFLOW_ENABLED=false
 ```
 
-知识库 API：
+## 存储说明
 
-- `GET/POST /knowledge-bases`
-- `GET/PATCH/DELETE /knowledge-bases/{knowledge_base_id}`
-- `POST /knowledge-bases/{knowledge_base_id}/restore`
-- `GET /documents?knowledge_base_id=...`
-- `POST /documents/{doc_id}/enrichment/retry?knowledge_base_id=...`
+当前活跃 RAG 存储使用 SQLite + Milvus：
 
-文档概要、关键词和建议问题是异步导航 metadata。最终答案和图谱路径仍必须回到原始 `document_chunk`。
+- SQLite 保存 `document`、`document_chunk`、FTS5、知识库、任务、反馈、会话和评测元数据。
+- Milvus 保存 child/table/OCR chunk 向量，可选启用 BM25。
+- Neo4j 是可选图谱存储；关闭时后端不会强依赖 Neo4j driver。
+- `backend/chroma_db/` 仅作为历史数据目录保留，除非明确清理，不要手动删除。
 
-### 升级与 clean-rebuild
+## 数据重建
 
-本次多知识库升级采用最终 schema，不提供旧 SQLite、Milvus、FTS5、KG、评测、反馈或上传数据的迁移/回填。旧 schema 或缺少 workspace/KB 字段的 Milvus collection 会进入 `reset_required`，普通启动、查询和 ingest 都不会自动删除或兼容升级旧数据。
+当底层 schema 或存储结构需要重新初始化时，应先停止 API、ingest、worker 和图谱/增强任务，再在 `backend/` 下执行维护命令。
 
-先停止 API、ingest、KG 和 enrichment worker，再在 `backend/` 下执行：
+只查看计划，不删除数据：
 
 ```powershell
-# 1. 只显示计划，不删除数据
 python -m app.scripts.rebuild_knowledge_storage --delete-managed-sources --include-neo4j
+```
 
-# 2. 确认计划和独立备份后执行
+确认备份后执行：
+
+```powershell
 python -m app.scripts.rebuild_knowledge_storage `
   --execute `
   --environment dev `
   --confirm RESET_ALL_APPLICATION_DATA:dev `
-  --backup-dir D:\backup\bee-before-reset `
+  --backup-dir D:\backup\new-rag-project-before-reset `
   --delete-managed-sources `
   --include-neo4j
 ```
 
-`--backup-dir` 备份 SQLite 和受管理文件；Milvus 与 Neo4j 需要先使用各自原生工具备份。命令完成后只创建空的最终 schema、默认 workspace/Document KB、FTS5 和向量 collection，不导入旧记录。部分失败会保留 maintenance 状态并阻止应用启动。完整说明见 [开发指南](docs/DEVELOPMENT.md) 和 [API 文档](docs/API.md)。
+`--backup-dir` 会备份 SQLite 和受管理源文件；Milvus 与 Neo4j 需要先使用各自原生工具备份。维护命令失败时会保留 maintenance 状态并阻止应用启动，排除故障后应重新执行完整 clean-rebuild。
+
+## 开发文档
+
+- [架构说明](docs/ARCHITECTURE.md)
+- [开发指南](docs/DEVELOPMENT.md)
+- [API 文档](docs/API.md)
+- [后端 RAG Pipeline 设计](docs/design-docs/backend-rag-pipeline.md)

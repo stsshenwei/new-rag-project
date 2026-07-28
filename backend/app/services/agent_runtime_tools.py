@@ -216,46 +216,9 @@ class KnowledgeSearchTool:
 
 class GrepChunksTool:
     name = "grep_chunks"
-    description = "Keyword/regex-like search over selected knowledge-base chunks."
-    parameters = {
-        "type": "object",
-        "properties": {
-            "query": {"type": "string", "description": "Keyword or alternation query."},
-            "top_k": {"type": "integer", "minimum": 1, "maximum": 20},
-        },
-        "required": ["query"],
-        "additionalProperties": False,
-    }
-
-    def execute(self, arguments: dict[str, Any], context: RuntimeToolContext) -> RuntimeToolResult:
-        query = str(arguments.get("query") or context.question).strip()
-        top_k = int(arguments.get("top_k") or 8)
-        hits = _call_scoped(context.rag_service, "keyword_retrieve_hits", query, top_k=top_k, scope=context.scope)[:top_k]
-        items = [_hit_summary(hit, index, include_snippet=True, query=query) for index, hit in enumerate(hits, start=1)]
-        candidate_ids = _candidate_ids(items)
-        context.state.setdefault("search_candidate_ids", set()).update(candidate_ids)
-        return RuntimeToolResult(
-            success=True,
-            output=json.dumps({"query": query, "matches": items}, ensure_ascii=False),
-            observation=f"找到 {len(items)} 条关键词候选",
-            metadata={
-                "result_count": len(items),
-                "matched_chunks": len(items),
-                "total_matches": len(items),
-                "doc_count": len(_source_titles(items)),
-                "query": query,
-            },
-            source_chunk_ids=candidate_ids,
-            source_titles=_source_titles(items),
-            candidate_ids=candidate_ids,
-        )
-
-
-class GrepChunksTool:
-    name = "grep_chunks"
     description = (
-        "Keyword search over selected knowledge-base chunks. Use structured queries to include synonyms, "
-        "aliases, abbreviations, English names, legacy names, product names, and time/action variants."
+        "Keyword search over selected knowledge-base chunks. Build structured query variants from the user's "
+        "entities, requested relation or action, and hard constraints using your own language and domain knowledge."
     )
     parameters = {
         "type": "object",
@@ -264,12 +227,12 @@ class GrepChunksTool:
             "queries": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "Search variants such as aliases, abbreviations, English names, and legacy names.",
+                "description": "Bounded query variants including useful aliases, abbreviations, translations, and field-name variants.",
             },
             "required_terms": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "Optional terms that anchor the requested fact, such as launch, release, version, or configuration.",
+                "description": "Optional anchors derived from the requested relation, action, or hard constraints.",
             },
             "match_mode": {
                 "type": "string",

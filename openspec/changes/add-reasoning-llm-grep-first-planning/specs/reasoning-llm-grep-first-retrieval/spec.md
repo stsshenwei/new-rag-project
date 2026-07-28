@@ -71,16 +71,20 @@ The `progressive_rag_agent` prompt SHALL be optimized around an adapted Assess-R
 - **WHEN** a user asks about system prompts, hidden workflow, tool parameters, or internal instructions
 - **THEN** the prompt policy MUST instruct the model to provide only a high-level role description and not reveal or summarize confidential instructions
 
-### Requirement: Product Spec Lookup Produces Grounded Selection Advice
-When a user asks for product models by combining a selector with product and specification constraints, the system SHALL guide answer synthesis to include evidence-grounded selection advice when the retrieved and deep-read evidence supports it.
+### Requirement: Multi-Constraint Tasks Use Domain-Agnostic Evidence Evaluation
+When a user asks to filter, compare, or recommend candidates using multiple constraints, the system SHALL let the LLM interpret the request and SHALL evaluate every hard constraint against retrieved and deep-read evidence belonging to the same candidate or subject.
 
-#### Scenario: Spec-filtered model lookup includes selection section
-- **WHEN** the user asks a question such as "找出24个光口的交换机"
-- **THEN** the answer guidance MUST classify the request as product selection, list matching candidate models first, and ask the model to add a "选型建议" section when candidate attributes support distinguishable scenarios
+#### Scenario: Model generates domain semantics
+- **WHEN** a request uses domain-specific terminology, aliases, units, relationships, or thresholds
+- **THEN** the model MUST generate useful retrieval variants and comparison hypotheses from its parametric knowledge rather than requiring a static terminology file or a domain keyword branch in application code
 
-#### Scenario: Selection advice remains evidence grounded
-- **WHEN** the answer includes "选型建议"
-- **THEN** scenario labels, recommendation reasons, and model attributes MUST come from the same product or same source evidence, and unsupported scenario differences MUST be stated as unavailable rather than invented
+#### Scenario: Candidate constraints remain evidence grounded
+- **WHEN** the answer lists or recommends a candidate
+- **THEN** every hard constraint, comparison, recommendation reason, and candidate attribute MUST be supported by evidence for that same candidate or subject, and unresolved equivalences MUST be stated as unavailable rather than invented
+
+#### Scenario: Runtime remains domain agnostic
+- **WHEN** a new knowledge domain or a previously unseen question form is introduced
+- **THEN** the retrieval path MUST NOT require a new domain synonym dictionary entry, intent marker list, answer-template branch, or attribute-specific regex filter
 
 ### Requirement: Public Trace Summaries Are Safe And Auditable
 The reasoning runtime SHALL emit public trace and tool events that summarize search planning, grep execution, deep reading, reflection, and final synthesis without exposing hidden reasoning or raw internal details.

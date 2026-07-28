@@ -21,12 +21,14 @@ Current constraints:
 - Preserve mandatory deep reading after search tools return candidates.
 - Optimize `progressive_rag_agent` with an Assess-Reconnaissance-Plan-Execute workflow adapted to Bee.
 - Make product/spec lookup questions produce evidence-grounded selection advice when the retrieved evidence supports multiple candidates or distinguishable scenarios.
+- Keep query planning and answer synthesis domain agnostic so new domains do not require application-code keyword lists, terminology files, or attribute-specific regexes.
 - Emit user-safe trace events for search planning, retrieval, deep reading, reflection, and synthesis.
 
 **Non-Goals:**
 
 - Do not make quick mode default to open-ended model-driven retrieval.
 - Do not rely on a hand-maintained terminology dictionary as the primary synonym source.
+- Do not add per-domain query expansion, intent classification, answer formatting, or candidate filtering branches to the deterministic runtime.
 - Do not answer from LLM-generated search terms unless retrieved evidence supports the claim.
 - Do not expose raw prompts, private reasoning, internal IDs, raw tool arguments, or provider payloads to end users.
 - Do not change vector-store schema, ingest, parser behavior, document chunking, or frontend route contracts.
@@ -109,17 +111,18 @@ Rationale: users need to trust the retrieval process without seeing internal plu
 
 Alternative considered: expose full `tool_calls.arguments`. That is helpful for debugging but violates the current user-friendly communication boundary and can leak internal strategy.
 
-### Decision 7: Product lookup can synthesize selection advice
+### Decision 7: Constraint evaluation is model-authored and domain agnostic
 
-Questions such as "找出24个光口的交换机" are not just fact lookup; they imply a product candidate set constrained by model/spec evidence. The quick answer guidance and reasoning prompt should ask the model to list matching candidates first and then add "选型建议" with "需求场景" and "推荐型号" when deep-read evidence supports scenario differences.
+For filtering, comparison, and recommendation requests, the model extracts entities, requested relations or actions, hard constraints, aliases, units, operators, and thresholds. It then generates retrieval variants and verifies each constraint against deep-read evidence for the same candidate or subject. Application code does not classify these requests with domain keyword lists or remove candidates using attribute-specific regexes.
 
-Rationale: this matches the useful Weknora answer shape without hardcoding a local model dictionary. The advice comes from retrieved product attributes, not from the LLM-generated grep variants.
+Rationale: domain semantics belong in the LLM-authored tool arguments and evidence synthesis. The deterministic runtime should validate bounded schemas, enforce retrieval/deep-reading order, and preserve evidence provenance.
 
-Alternative considered: require users to explicitly say "推荐" or "选型". That misses common Chinese product lookup phrasing where "找出/有哪些/筛选" already carries a selection intent.
+Alternative considered: add a parser and post-retrieval filter for every new product family or parameter type. That causes rule accumulation, misses unseen terminology, and can discard valid evidence before the model evaluates it.
 
 ## Risks / Trade-offs
 
 - [Risk] The model may over-expand with unrelated synonyms. -> Mitigation: bound query counts, cap output size, record matched queries, and rely on deep-read evidence before synthesis.
+- [Risk] Removing deterministic domain filters can retain more distractor candidates. -> Mitigation: require per-candidate evidence ledgers, same-subject provenance, and explicit unresolved verdicts during final synthesis.
 - [Risk] Grep-first can add latency in reasoning mode. -> Mitigation: keep it reasoning-only by default, limit max tool calls, and reuse existing iteration limits.
 - [Risk] Regex-like input may not execute consistently across keyword providers. -> Mitigation: normalize structured `queries` and split simple alternation before provider calls.
 - [Risk] A strict guard may frustrate non-retrieval reasoning. -> Mitigation: apply it only when the request appears to require KB factual/domain evidence and a KB scope is available.

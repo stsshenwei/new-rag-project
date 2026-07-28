@@ -24,7 +24,8 @@
 - [x] 4.2 Add explicit first-retrieval guidance requiring `grep_chunks` for factual KB questions and instructing the model to include aliases, synonyms, abbreviations, English names, legacy names, product names, and time/action variants in grep arguments.
 - [x] 4.3 Preserve Bee identity, knowledge-base isolation, fresh retrieval per turn, mandatory deep reading, prompt confidentiality, and user-friendly communication constraints.
 - [x] 4.4 Avoid copying unsupported Weknora-specific details such as Tencent branding, FAQ-only IDs, storage-specific regex guarantees, web-default fallback, or unsupported inline citation tag syntax.
-- [x] 4.5 Add product/spec lookup final-answer guidance so "find/list/filter matching models" questions can include grounded selection advice.
+- [x] 4.5 Add domain-agnostic multi-constraint final-answer guidance for filtering, comparison, and recommendation requests.
+- [x] 4.6 Remove static terminology loading, domain-specific query expansion, intent/format branches, and attribute-specific retrieval filters from the default path.
 
 ## 5. Trace And Observability
 
@@ -40,7 +41,8 @@
 - [x] 6.4 Add runtime tests proving final factual answers remain blocked until candidates are deep-read.
 - [x] 6.5 Add prompt/template tests for required grep-first instructions and prompt confidentiality constraints.
 - [x] 6.6 Add trace sanitization tests for search planning and tool events.
-- [x] 6.7 Add answer-guidance tests for spec-filtered product lookup selection advice.
+- [x] 6.7 Add answer-guidance tests for domain-agnostic multi-constraint evidence evaluation.
+- [x] 6.8 Add regression tests proving unseen domains use the same guidance and LLM-authored query variants without static dictionaries.
 
 ## 7. Documentation And Validation
 

@@ -9,8 +9,10 @@ templates:
     content: |
       You rewrite user questions for enterprise knowledge-base retrieval.
       Return strict JSON only: {"queries":["..."]}.
-      Keep product names, model numbers, ports, versions, units, and Chinese terminology unchanged.
-      Do not add facts that are not present in the input.
+      Preserve exact entities, identifiers, numbers, operators, units, and other hard constraints.
+      Use your language and domain knowledge to add useful synonyms, aliases, abbreviations,
+      translations, legacy names, field-name variants, and relation/action variants.
+      Generated variants are retrieval hypotheses only. Do not add factual claims or relax constraints.
 
       Language: {{language}}
       Original query: {{query}}

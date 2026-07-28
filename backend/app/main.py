@@ -109,7 +109,6 @@ from app.services.query_understanding import (
     OpenAIQueryRewriteClient,
     QueryUnderstandingConfig,
     QueryUnderstandingService,
-    load_terminology_dictionary,
 )
 from app.services.rag_service import RAGService
 from app.services.rag_config import load_rag_config
@@ -352,11 +351,9 @@ def build_rag_service() -> RAGService:
     reranker_timeout_seconds = _get_env_float("RERANKER_TIMEOUT_SECONDS", default=5.0)
 
     data_dir = os.getenv("RAG_DATA_DIR", "./data")
-    query_terms_path = _get_env("QUERY_TERMS_PATH", default=str(os.path.join(data_dir, "terms.yaml")))
     query_rewrite_enabled = _get_env_bool("QUERY_REWRITE_ENABLED", default=False)
     query_intent_detection_enabled = _get_env_bool("QUERY_INTENT_DETECTION_ENABLED", default=False)
     query_understanding = QueryUnderstandingService(
-        dictionary=load_terminology_dictionary(query_terms_path),
         config=QueryUnderstandingConfig(
             enabled=_get_env_bool("QUERY_UNDERSTANDING_ENABLED", default=True),
             rewrite_enabled=query_rewrite_enabled,
@@ -1137,9 +1134,6 @@ def _stream_raw_chat_events(
 ):
     temporary_sources = temporary_sources or []
     hits = rag_service.recall_parent_hits(rag_service.hybrid_retrieve_hits(question, scope=scope), scope=scope)
-    constraint_filter = getattr(rag_service, "filter_hits_for_question_constraints", None)
-    if callable(constraint_filter):
-        hits = constraint_filter(question, hits)
     sources = _merge_sources(rag_service.extract_sources(hits), temporary_sources)
     stream_state["sources"] = sources
 

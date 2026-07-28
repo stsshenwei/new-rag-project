@@ -2045,114 +2045,6 @@ class RAGService:
             return False
         return shorter[-min_overlap:] in longer or shorter[:min_overlap] in longer
 
-    def filter_hits_for_question_constraints(self, question: str, hits: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Require product type and requested port count to coexist in one evidence document."""
-        if not any(marker in question for marker in ["哪些", "哪个", "有哪些", "列出", "推荐", "找出", "筛选", "查找"]):
-            return hits
-        requested_type = self._requested_device_type(question)
-        requested_port_count = self._requested_ethernet_port_count(question)
-        requested_optical_port_count = self._requested_optical_port_count(question)
-        if not requested_type and requested_port_count is None and requested_optical_port_count is None:
-            return hits
-
-        accepted: list[dict[str, Any]] = []
-        excluded: list[dict[str, str]] = []
-        for hit in hits:
-            metadata = hit.get("metadata", {})
-            source = str(metadata.get("source", ""))
-            content = str(hit.get("content", ""))
-            reasons: list[str] = []
-            if requested_type and not self._evidence_matches_device_type(f"{source}\n{content}", requested_type):
-                reasons.append(f"device_type_not_{requested_type}")
-            if requested_port_count is not None and not self._evidence_matches_ethernet_port_count(content, requested_port_count):
-                reasons.append(f"ethernet_port_count_not_{requested_port_count}")
-            if requested_optical_port_count is not None and not self._evidence_matches_optical_port_count(f"{source}\n{content}", requested_optical_port_count):
-                reasons.append(f"optical_port_count_not_{requested_optical_port_count}")
-            if reasons:
-                excluded.append({"source": source, "reason": ",".join(reasons)})
-            else:
-                accepted.append(hit)
-
-        if excluded:
-            self._last_retrieval_debug["constraint_filter"] = {
-                "requested_device_type": requested_type,
-                "requested_ethernet_port_count": requested_port_count,
-                "requested_optical_port_count": requested_optical_port_count,
-                "accepted_sources": [str(hit.get("metadata", {}).get("source", "")) for hit in accepted],
-                "excluded": excluded,
-            }
-        return accepted
-
-    def _requested_device_type(self, question: str) -> str:
-        markers = {
-            "controller": ["控制器", "无线AC", "AC控制器"],
-            "onu": ["ONU", "光网络单元"],
-            "olt": ["OLT", "光线路终端"],
-            "switch": ["交换机"],
-        }
-        lowered = question.lower()
-        for device_type, aliases in markers.items():
-            if any(alias.lower() in lowered for alias in aliases):
-                return device_type
-        return ""
-
-    def _requested_ethernet_port_count(self, question: str) -> int | None:
-        for pattern in [
-            r"(\d+)\s*个?\s*(?:电口|RJ[- ]?45)",
-            r"(?:电口|RJ[- ]?45)\s*(?:数量|数)?\s*(?:为|是|[:：])?\s*(\d+)",
-        ]:
-            match = re.search(pattern, question, flags=re.IGNORECASE)
-            if match:
-                return int(match.group(1))
-        return None
-
-    def _requested_optical_port_count(self, question: str) -> int | None:
-        for pattern in [
-            r"(\d+)\s*个?\s*(?:光口|SFP)",
-            r"(?:光口|SFP)\s*(?:数量|数)?\s*(?:为|是|[:：])?\s*(\d+)",
-        ]:
-            match = re.search(pattern, question, flags=re.IGNORECASE)
-            if match:
-                return int(match.group(1))
-        return None
-
-    def _evidence_matches_device_type(self, evidence_text: str, requested_type: str) -> bool:
-        explicit = re.search(r"设备类型\s*[:：]?\s*([A-Za-z0-9_-]+|[\u4e00-\u9fff]+)", evidence_text, flags=re.IGNORECASE)
-        explicit_type = explicit.group(1).lower() if explicit else ""
-        aliases = {
-            "controller": ["控制器", "ac控制器", "无线ac", "dh-ac"],
-            "onu": ["onu", "光网络单元"],
-            "olt": ["olt", "光线路终端"],
-            "switch": ["交换机"],
-        }.get(requested_type, [requested_type])
-        if explicit_type:
-            return any(alias.lower() in explicit_type for alias in aliases)
-        lowered = evidence_text.lower()
-        return any(alias.lower() in lowered for alias in aliases)
-
-    def _evidence_matches_ethernet_port_count(self, content: str, count: int) -> bool:
-        return any(
-            re.search(pattern, content, flags=re.IGNORECASE)
-            for pattern in [
-                rf"接入电口\s*[:：]?\s*{count}\s*个",
-                rf"{count}\s*[×xX*]\s*RJ[- ]?45",
-                rf"Port\s*1\s*[-–—]\s*{count}\s*[:：]",
-            ]
-        )
-
-    def _evidence_matches_optical_port_count(self, content: str, count: int) -> bool:
-        return any(
-            re.search(pattern, content, flags=re.IGNORECASE)
-            for pattern in [
-                rf"接入光口\s*[:：]?\s*{count}\s*个",
-                rf"光口\s*(?:数量|数)?\s*(?:为|是|[:：])?\s*{count}\s*个?",
-                rf"{count}\s*[×xX*]\s*SFP(?!\+)",
-                rf"{count}\s*个?\s*SFP(?!\+)",
-                rf"SFP(?!\+)\s*光口\s*(?:数量|数)?\s*(?:为|是|[:：])?\s*{count}\s*个?",
-                rf"(?:^|[-_/]){count}GF(?:\d|[-_/A-Z]|$)",
-            ]
-        )
-
     def _retrieval_score(self, hit: dict[str, Any]) -> float:
         return float(hit.get("reranker_score", hit.get("hybrid_score", hit.get("vector_score", hit.get("keyword_score", 0.0)))))
 
@@ -2305,7 +2197,7 @@ class RAGService:
             "expanded_terms": understanding.get("expanded_terms", []) if isinstance(understanding, dict) else [],
             "term_mappings": term_mappings,
             "evidence": evidence,
-            "summary": "基于问题理解、术语归一、知识库检索命中和来源片段生成回答。",
+            "summary": "基于问题理解、检索变体、知识库命中和来源片段生成回答。",
         }
 
     def build_chat_agent_trace(
@@ -2332,8 +2224,7 @@ class RAGService:
         if not isinstance(retrieval_queries, list) or not retrieval_queries:
             retrieval_queries = [question]
         normalized_query = str(understanding.get("normalized_query") or question)
-        applied_terms = understanding.get("applied_terms", [])
-        applied_term_count = len(applied_terms) if isinstance(applied_terms, list) else 0
+        generated_query_count = max(0, len(retrieval_queries) - 1)
 
         retrieval_stages = debug.get("retrieval_stages", {}) if isinstance(debug.get("retrieval_stages"), dict) else {}
         query_expansion = debug.get("query_expansion", {}) if isinstance(debug.get("query_expansion"), dict) else {}
@@ -2382,9 +2273,9 @@ class RAGService:
             {
                 "stage": "UnderstandQuestion",
                 "status": "completed",
-                "summary": f"已完成问题理解，生成 {len(retrieval_queries)} 个检索问题，命中 {applied_term_count} 个术语映射。",
+                "summary": f"已完成问题理解，使用 {len(retrieval_queries)} 个检索问题，其中 {generated_query_count} 个为扩展变体。",
                 "source_chunk_ids": [],
-                "metadata": {**base_metadata, "stage": "understand_question", "applied_term_count": applied_term_count},
+                "metadata": {**base_metadata, "stage": "understand_question", "generated_query_count": generated_query_count},
             },
             {
                 "stage": "RetrieveKnowledgeBase",
@@ -3245,10 +3136,7 @@ class RAGService:
         if top_k:
             self.top_k = top_k
         try:
-            hits = self.filter_hits_for_question_constraints(
-                question,
-                self.recall_parent_hits(self.hybrid_retrieve_hits(question, scope=scope), scope=scope),
-            )
+            hits = self.recall_parent_hits(self.hybrid_retrieve_hits(question, scope=scope), scope=scope)
             if not hits:
                 return {
                     "answer": "I cannot determine the answer from the available evidence.",
@@ -3773,9 +3661,9 @@ class RAGService:
         scope: KnowledgeBaseScope | None = None,
     ) -> Generator[str, None, None]:
         scope = scope or self.default_scope
-        current_hits = hits if hits is not None else self.filter_hits_for_question_constraints(
-            question,
-            self.recall_parent_hits(self.hybrid_retrieve_hits(question, scope=scope), scope=scope),
+        current_hits = hits if hits is not None else self.recall_parent_hits(
+            self.hybrid_retrieve_hits(question, scope=scope),
+            scope=scope,
         )
         context = self._build_context(current_hits)
         conversation_block = self._build_conversation_context(conversation_context or {})
@@ -3790,7 +3678,7 @@ class RAGService:
         user_prompt = (
             "请基于下面的上下文回答用户问题。\n"
             "如果上下文信息不足，请明确指出“无法确定”，不要编造没有来源的事实、命令、版本、URL 或参数。\n"
-            "列举产品或设备时，每个型号的设备类型和参数必须由同一个来源块共同支持；禁止跨文档拼接不同型号的属性。\n"
+            "涉及多个候选对象时，每个对象的属性和结论必须由该对象自己的来源块共同支持；禁止跨对象或跨文档拼接属性。\n"
             "直接结束于有信息量的结论，不要添加“如果需要更多信息”“如需详细建议”“请提供更多信息”等客套式结尾。\n"
             f"{answer_guidance}"
             f"\n上下文:\n{context if context else '(无检索结果)'}\n\n"
@@ -3863,236 +3751,14 @@ class RAGService:
         return "\n".join(lines) if len(lines) > 1 else ""
 
     def _build_answer_style_guidance(self, question: str, context: str) -> str:
-        if self._is_decision_question(question):
-            return self._build_decision_answer_guidance(question)
-        if self._is_compatibility_or_parameter_question(question):
-            return self._build_compatibility_answer_guidance(context)
-        if not self._is_howto_question(question):
-            return self._build_default_answer_guidance()
-        command_hint = self._context_has_command_or_config(context)
-        lines = [
-            "\n回答格式要求:",
-            "- 这是操作/步骤类问题，优先使用结构化 Markdown。",
-            "- 仅在上下文支持时使用“前提条件”“安装步骤”“在线安装步骤”“离线安装步骤”“验证”“注意事项”等小节。",
-            "- 步骤请使用有序列表；风险、限制和注意事项请单独说明。",
-            "- 不要补充上下文没有提供的命令、下载地址、版本号、安装参数或前提条件。",
-            "- 对上下文没有覆盖的步骤或参数，请明确写出“根据提供的文档信息无法确定”。",
-        ]
-        if command_hint:
-            lines.append("- 上下文中的命令、配置片段或安装命令必须放入带语言标识的 fenced code block，例如 ```bash。")
-        return "\n".join(lines) + "\n"
-
-    def _build_default_answer_guidance(self) -> str:
+        del question, context
         return (
-            "\n回答格式要求:\n"
-            "- 所有回答默认使用清晰的 Markdown 结构：先给直接结论，再按需要使用小节、列表或表格组织证据。\n"
-            "- 简单事实问题可以保持简短，但仍要让结论和依据清楚可读。\n"
-            "- 当问题涉及多项结果、对比、配置、参数、型号或步骤时，优先使用 Markdown 表格或项目列表。\n"
-            "- 只写上下文支持的内容；上下文没有覆盖的事实、参数、型号限制或结论，请明确写“根据提供的文档无法确定”。\n"
-            "- 不要添加与问题无关的小节，也不要为了格式化而强行生成空表格。\n"
+            "\n回答要求:\n"
+            "- 先理解用户要完成的任务，再自行选择最合适的 Markdown 结构；不要依赖关键词列表判断问题类型。\n"
+            "- 先给直接结论。简单问题保持简短；步骤使用有序列表；多对象、多条件或对比任务优先使用表格。\n"
+            "- 对筛选、比较或推荐任务，先从用户问题中完整抽取硬性条件，再逐个候选、逐个条件核验；只有全部硬性条件都有同一对象证据支持的候选才能进入结果。\n"
+            "- 可以利用语言和领域知识理解同义词、别名、缩写、字段变体、符号、单位和阈值，但这些只是解释与检索假设，不能代替上下文证据。\n"
+            "- 每个结论、属性和数值都必须能回溯到对应对象自己的上下文；禁止跨对象或跨来源拼接属性。\n"
+            "- 当存在多个可行候选且证据足以区分其适用条件时，再给推荐建议并说明证据支持的理由；证据不足时明确写“根据提供的文档无法确定”。\n"
+            "- 不要添加与问题无关的小节，不要生成空表格，也不要编造事实、命令、版本、URL、参数或推荐理由。\n"
         )
-
-    def _build_compatibility_answer_guidance(self, context: str) -> str:
-        lines = [
-            "\n回答格式要求:",
-            "- 这是产品适配/兼容/支持项/技术参数类问题，优先使用结构化 Markdown。",
-            "- 先给出直接结论，再按证据组织小节；不要把没有证据支持的内容写成确定事实。",
-            "- 当上下文支持时，使用“完全适配系列”或“完全支持项”表格列出型号/系列和适配说明。",
-            "- 当上下文区分部分支持时，单独使用“部分型号适配系列”表格，并写明“仅部分型号支持”等限制说明。",
-            "- 当上下文包含速率、距离、电压、温度、湿度、端口、认证方式或接入速率等信息时，使用“技术参数”小节逐项列出。",
-            "- 每个型号、系列、端口数、线缆支持、认证方式、接入速率和参数值必须由同一产品或同一来源上下文共同支持；禁止跨文档拼接属性。",
-            "- 对上下文没有覆盖的兼容关系、型号限制或参数，必须写“根据提供的文档无法确定”，不要编造数值、URL、固件版本、命令参数或产品属性。",
-        ]
-        if "仅部分" in context or "部分型号" in context or "partial" in context.lower():
-            lines.append("- 上下文出现部分支持线索时，必须把部分支持和完全支持分开呈现。")
-        return "\n".join(lines) + "\n"
-
-    def _build_decision_answer_guidance(self, question: str) -> str:
-        splitter_match = re.search(r"(\d+)\s*个?\s*分光器", question, flags=re.IGNORECASE)
-        requirement = ""
-        if splitter_match and "olt" in question.lower():
-            count = int(splitter_match.group(1))
-            requirement = (
-                f"- 先说明换算前提：若每个分光器独占一个PON口，则设备需要至少{count}个可用PON口；"
-                "如果用户实际允许多个分光器共享PON口，则该前提需要重新确认。\n"
-            )
-        return (
-            "\n回答格式要求:\n"
-            f"{requirement}"
-            "- 这是产品选型问题。先给明确结论，再给“推荐方案”和必要的“备选方案”。\n"
-            "- 候选型号表只能列出同时满足用户全部硬性约束的型号；例如“24个光口”必须由同一产品证据证明有24个光口、24×SFP或24GF，不能把24个RJ-45电口、24GT或4个SFP+误当成24个光口。\n"
-            "- 每个方案必须写明型号、可用PON口或接口容量、满足需求的计算、扩展性以及关键限制。\n"
-            "- 区分机框式和盒式设备；如果单台盒式设备不足，可以在文档明确支持时给出多台组合方案。\n"
-            "- 至少两个可行方案时，使用Markdown表格给出简短对比，并明确首选理由。\n"
-            "- 所有端口数、板卡数量、槽位、分光比、功耗和尺寸必须来自对应型号自己的来源，禁止跨型号拼接。\n"
-            "- 不要把PON口最大分路比误写成设备的PON口数量；分路比表示单个PON口可承载的光分支能力。\n"
-            "- 当用户按端口、规格、型号或产品特征筛选设备时，先列出命中的候选型号，再在证据支持时补充“选型建议”。\n"
-            "- “选型建议”优先使用 Markdown 表格，列名使用“需求场景”和“推荐型号”；场景只能来自同一产品或同一来源证据中明确支持的属性，例如纯光口接入、光电混合、双电源冗余、基础应用等。\n"
-            "- 如果检索证据只证明某些型号满足规格，但不能证明场景差异或优先级，必须写明“根据提供的文档无法确定更多场景差异”，不要凭常识补推荐理由。\n"
-        )
-
-    def _is_decision_question(self, question: str) -> bool:
-        q = question.lower()
-        explicit_markers = [
-            "choose",
-            "recommend",
-            "should",
-            "帮我选",
-            "选一款",
-            "选型",
-            "推荐",
-            "选择",
-        ]
-        if any(marker in q for marker in explicit_markers):
-            return True
-        return self._is_product_selection_question(q)
-
-    def _is_product_selection_question(self, question: str) -> bool:
-        q = question.lower()
-        compatibility_markers = [
-            "适配",
-            "兼容",
-            "compatible",
-            "compatibility",
-            "adapter",
-            "adaptor",
-        ]
-        if any(marker in q for marker in compatibility_markers):
-            return False
-        product_markers = [
-            "交换机",
-            "设备",
-            "型号",
-            "产品",
-            "olt",
-            "onu",
-            "switch",
-            "switches",
-            "device",
-            "devices",
-            "model",
-            "models",
-            "product",
-            "products",
-        ]
-        selector_markers = [
-            "找出",
-            "列出",
-            "筛选",
-            "查找",
-            "哪些",
-            "有哪些",
-            "满足",
-            "符合",
-            "find",
-            "list",
-            "which",
-            "show",
-            "filter",
-            "with",
-        ]
-        spec_markers = [
-            "光口",
-            "电口",
-            "端口",
-            "接口",
-            "千兆",
-            "万兆",
-            "双电源",
-            "poe",
-            "sfp",
-            "xfp",
-            "ge",
-            "10g",
-            "24",
-            "48",
-            "port",
-            "ports",
-            "optical",
-            "ethernet",
-            "uplink",
-            "power",
-        ]
-        has_product = any(marker in q for marker in product_markers)
-        has_selector = any(marker in q for marker in selector_markers)
-        has_spec = any(marker in q for marker in spec_markers)
-        has_numeric_port_spec = bool(
-            re.search(r"\d+\s*(?:个|路|口|x|×)?\s*(?:光口|电口|端口|接口|sfp|ge|10g|ports?|optical)", q)
-            or re.search(r"(?:光口|电口|端口|接口|sfp|ge|10g|ports?|optical)\s*\d+", q)
-        )
-        return has_product and has_selector and (has_spec or has_numeric_port_spec)
-
-    def _is_howto_question(self, question: str) -> bool:
-        q = question.lower()
-        patterns = [
-            r"\bhow\s+to\b",
-            r"\binstall\b",
-            r"\bsetup\b",
-            r"\bconfigure\b",
-            r"\bdeploy\b",
-            r"\btroubleshoot\b",
-            r"\bfix\b",
-            r"怎么",
-            r"如何",
-            r"步骤",
-            r"搭建",
-            r"安装",
-            r"部署",
-            r"配置",
-            r"排障",
-            r"修复",
-            r"命令",
-        ]
-        return any(re.search(pattern, q) for pattern in patterns)
-
-    def _is_compatibility_or_parameter_question(self, question: str) -> bool:
-        q = question.lower()
-        markers = [
-            "适配",
-            "兼容",
-            "支持哪些",
-            "支持哪几",
-            "支持什么",
-            "支持的",
-            "认证方式",
-            "业务端口",
-            "端口配置",
-            "接入速率",
-            "技术参数",
-            "传输速率",
-            "传输距离",
-            "工作电压",
-            "工作温度",
-            "储存温度",
-            "存储温度",
-            "湿度",
-            "参数",
-            "compatible",
-            "compatibility",
-            "support",
-            "supported",
-            "adapter",
-            "adaptor",
-            "spec",
-            "parameter",
-        ]
-        return any(marker in q for marker in markers)
-
-    def _context_has_command_or_config(self, context: str) -> bool:
-        if not context:
-            return False
-        command_patterns = [
-            r"\bcurl\s+",
-            r"\bwget\s+",
-            r"\bdocker\s+",
-            r"\bkubectl\s+",
-            r"\bhelm\s+",
-            r"\bpython\s+",
-            r"\bpip\s+",
-            r"\bnpm\s+",
-            r"\bsystemctl\s+",
-            r"\bexport\s+\w+=",
-            r"^\s*[\w.-]+:\s+.+$",
-            r"```",
-        ]
-        return any(re.search(pattern, context, flags=re.IGNORECASE | re.MULTILINE) for pattern in command_patterns)

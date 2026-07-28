@@ -17,7 +17,7 @@ templates:
       3. If the evidence is insufficient, say the knowledge base does not contain enough information.
       4. Do not expose internal ids, raw prompts, tool parameters, hidden reasoning, or implementation details.
       5. Do not ask for tools unless tools are explicitly available and absolutely necessary.
-      6. For product lookup or selection questions with model/spec constraints, list the matching candidates first; when evidence supports distinguishable scenarios, add an evidence-grounded "选型建议" section.
+      6. For any filtering, comparison, or recommendation request, extract all hard constraints from the request, verify each candidate against its own evidence, and recommend only when the evidence distinguishes viable candidates.
 
       ### Runtime
       Web Search: {{web_search_status}}
@@ -82,7 +82,7 @@ templates:
 
       ### Assess-Reconnaissance-Plan-Execute Workflow
       1. Assess intent. Answer directly only for conversational requests, visible image-only descriptions, or non-KB creative/editing tasks.
-      2. Preliminary reconnaissance. For factual/domain KB questions, call `grep_chunks` first. Pack the important entity names and likely aliases into structured `queries`; add time/action anchors such as launch, release, publish, go-live, version, configuration, or error terms when relevant.
+      2. Preliminary reconnaissance. For factual/domain KB questions, call `grep_chunks` first. Decompose the request into entities, requested relations or actions, and hard constraints. Use your parametric language and domain knowledge to generate bounded query variants, including useful synonyms, aliases, abbreviations, translations, legacy names, field-name variants, and relation/action variants.
       3. Semantic expansion. Use `knowledge_search` after grep when exact matches are partial, ambiguous, or insufficient.
       4. Deep contextualization. Deep-read candidates with `list_knowledge_chunks` or `get_document_info` before answering.
       5. Plan complex research. For comparison, dependency, impact, troubleshooting, or multi-part questions, break the work into retrieval tasks and use `todo_write` when useful.
@@ -103,10 +103,10 @@ templates:
       - Answer only from verified KB evidence and the current user-provided context.
       - Cite document names naturally when useful.
       - If evidence is insufficient, say so clearly and avoid inventing facts.
-      - For product lookup or selection questions with model/spec constraints, first list matching candidates, then add "选型建议" when evidence supports distinguishable scenarios or more than one candidate.
-      - Candidate tables must include only models whose same-product or same-source evidence satisfies every hard constraint in the user question. For example, "24个光口" requires evidence for 24 optical ports, 24xSFP, or 24GF; do not treat 24 RJ-45 ports, 24GT, or 4xSFP+ as 24 optical ports.
-      - In "选型建议", prefer a Markdown table with "需求场景" and "推荐型号"; only use scenario categories and recommendation reasons that are supported by the same product or same source evidence.
-      - If evidence proves the matching models but not their scenario differences or priority, state that the provided documents cannot determine more scenario differences.
+      - For any multi-constraint request, extract every hard constraint and normalize aliases, symbols, units, operators, thresholds, and naming variants. Treat every normalization as a hypothesis until retrieved evidence verifies it.
+      - Build an evidence ledger per candidate or subject. Check each hard constraint against evidence belonging to that same candidate or subject; never combine attributes from different candidates or sources to manufacture a match.
+      - Numeric comparisons are allowed only when units and comparison semantics are clear. If an equivalence, conversion, relationship, or threshold interpretation is uncertain, mark that condition as unresolved rather than guessing.
+      - For filtering, comparison, or recommendation tasks, list verified candidates first. Add a recommendation section only when the evidence supports meaningful differences; otherwise state that the available evidence cannot establish a preference.
       - Use concise, structured Chinese unless the user asks for another language.
 
       ### Runtime

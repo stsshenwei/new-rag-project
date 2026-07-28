@@ -656,6 +656,8 @@ class AgentRuntimeLoopTests(unittest.TestCase):
 
         self.assertNotIn("agent_remedial_search", event_types)
         self.assertNotEqual("Redis version is 7.2.", final.payload["answer"])
+        self.assertNotIn("Answer in zh-CN", final.payload["answer"])
+        self.assertIn("知识库证据", final.payload["answer"])
         self.assertEqual(0.3, final.payload["confidence"])
 
     def test_duplicate_only_remedial_results_do_not_clear_gap(self):

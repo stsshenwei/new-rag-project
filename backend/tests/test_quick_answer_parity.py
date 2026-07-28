@@ -103,57 +103,28 @@ class QuickAnswerParityTests(unittest.TestCase):
 
         self.assertEqual([], service.build_chat_agent_trace("问题", [{"metadata": {"source": "a.md"}}]))
 
-    def test_compatibility_answer_guidance_requires_grounded_markdown(self):
-        service = self.make_service()
-        guidance = service._build_answer_style_guidance(
-            "TSFP-CU1M-DAC 可适配哪些交换机？",
-            "DH-NS7600 完全适配。DH-NS5500 仅部分型号支持。传输速率：10Gbps。",
-        )
-
-        self.assertIn("结构化 Markdown", guidance)
-        self.assertIn("完全适配系列", guidance)
-        self.assertIn("部分型号适配系列", guidance)
-        self.assertIn("技术参数", guidance)
-        self.assertIn("同一产品或同一来源", guidance)
-        self.assertIn("根据提供的文档无法确定", guidance)
-
-    def test_support_port_authentication_and_parameter_questions_use_guidance(self):
+    def test_answer_guidance_is_domain_agnostic_and_evidence_grounded(self):
         service = self.make_service()
         questions = [
             "DH-P5000-08GP-AC 支持哪些 ONU 认证方式？",
-            "DH-P204 ONU 的业务端口配置及接入速率是多少？",
-            "无线产品 DH-AC2048 支持哪些安全认证机制？",
             "这根线缆的工作温度和湿度要求是多少？",
-            "Which switches are compatible with this adapter?",
+            "比较三个合同方案并推荐风险最低的一个",
+            "如何部署服务？",
+            "Bee 是什么？",
         ]
 
-        for question in questions:
-            with self.subTest(question=question):
-                self.assertIn("根据提供的文档无法确定", service._build_answer_style_guidance(question, ""))
-
-    def test_product_filter_questions_get_selection_guidance(self):
-        service = self.make_service()
-        guidance = service._build_answer_style_guidance(
-            "找出24个光口的交换机",
-            "DH-NS5500-24GF4XF 支持24个光口和双电源。",
-        )
-
-        self.assertIn("选型建议", guidance)
-        self.assertIn("需求场景", guidance)
-        self.assertIn("推荐型号", guidance)
-        self.assertIn("同一产品或同一来源", guidance)
-        self.assertIn("24个光口", guidance)
-        self.assertIn("24GT", guidance)
-
-    def test_unrelated_fact_question_uses_default_markdown_without_special_tables(self):
-        service = self.make_service()
-        guidance = service._build_answer_style_guidance("Bee 是什么？", "Bee 是知识助手。")
-
-        self.assertIn("Markdown", guidance)
+        guidances = [service._build_answer_style_guidance(question, "任意上下文") for question in questions]
+        self.assertTrue(all(guidance == guidances[0] for guidance in guidances))
+        guidance = guidances[0]
+        self.assertIn("不要依赖关键词列表判断问题类型", guidance)
         self.assertIn("直接结论", guidance)
+        self.assertIn("完整抽取硬性条件", guidance)
+        self.assertIn("逐个候选、逐个条件核验", guidance)
+        self.assertIn("同义词、别名、缩写", guidance)
+        self.assertIn("跨对象或跨来源拼接", guidance)
         self.assertIn("根据提供的文档无法确定", guidance)
         self.assertNotIn("完全适配系列", guidance)
-        self.assertNotIn("部分型号适配系列", guidance)
+        self.assertNotIn("PON", guidance)
 
 
 if __name__ == "__main__":

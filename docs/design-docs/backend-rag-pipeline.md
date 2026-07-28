@@ -304,7 +304,7 @@ reasoning question
 
 The LLM-generated grep terms are retrieval hints, not answer evidence. If the model tries to answer or use semantic-only retrieval before grep-first on a factual KB question, the runtime emits a public `RequireGrepFirst` trace and asks the model to anchor exact terms first. Quick mode remains bounded by default because `QUICK_LLM_GREP_FIRST_ENABLED=false`.
 
-For product lookup or selection questions with model/spec constraints, such as "找出24个光口的交换机", reasoning-mode final synthesis should list matching candidates first and then include an evidence-grounded "选型建议" section when the deep-read evidence supports distinguishable scenarios. Scenario labels and recommendation reasons must come from the same product or same source evidence; otherwise the answer should state that the provided documents cannot determine more scenario differences.
+For any multi-constraint filtering, comparison, or recommendation request, reasoning mode asks the LLM to extract all hard constraints, normalize relevant aliases and units as hypotheses, and verify every condition against deep-read evidence for the same candidate or subject. Verified candidates are listed first; a recommendation is added only when the evidence supports meaningful differences.
 
 `thinking` is a public audit tool, not hidden chain-of-thought. It can record `phase`, `summary`, `validity`, `gap`, `correction_query`, `completion_status`, and `source_chunk_ids`. If reflection identifies a repairable gap and `AGENT_REMEDIAL_RETRIEVAL_MAX_ATTEMPTS` permits another attempt, the runtime performs a bounded remedial search, deduplicates already-read chunks, deep-reads newly selected evidence, and then continues to final reflection and answer generation. If the gap remains, the runtime stops with an insufficient-evidence answer rather than continuing the loop.
 
@@ -326,7 +326,7 @@ sources
 
 The quick trace is an audit summary derived from the current retrieval data. It records normalized query details, retrieval query count, candidate/hit counts, cited document count, matched chunk ids, selected knowledge-base scope, and insufficient-evidence status. It does not expose hidden chain-of-thought, scratchpads, raw prompts, memory context, secrets, or provider payloads. If `AGENT_TRACE_STREAM_ENABLED=false`, quick mode still falls back to the older shape of sources, reasoning, and tokens.
 
-Quick answer generation now uses source-grounded Markdown guidance for all questions by default: direct conclusion first, then concise sections, lists, or tables when they make the evidence easier to scan. Compatibility, support, adapter, authentication, port/rate, and technical-parameter questions add stricter guidance. Product lookup questions that combine a selector with product and spec markers also receive selection guidance, so model/spec filtering answers can include "选型建议" tables with "需求场景" and "推荐型号" when supported by evidence. Product attributes such as model, series, port count, cable support, authentication method, access rate, scenario labels, recommendation reasons, and parameter values must come from the same product or source context. Missing details must be stated as "根据提供的文档无法确定" rather than invented.
+Quick answer generation uses one domain-agnostic evidence contract for every question. The model selects the appropriate Markdown structure from the request semantics, extracts hard constraints for filtering/comparison/recommendation tasks, and verifies each candidate or subject against its own source evidence. The backend does not classify questions with domain keyword lists or inject domain-specific answer templates.
 
 ```text
 conversation_id
@@ -376,8 +376,8 @@ Quick mode normally emits no tool events. If a model or provider returns a tool 
 - Dense recall uses Milvus vector search through `query_dense`.
 - Keyword recall uses Milvus BM25/sparse search when `MILVUS_BM25_ENABLED=true`.
 - When Milvus BM25 is disabled, keyword recall uses SQLite FTS5 through `SQLiteFTSKeywordSearch`; FTS5 rows are derived from child/table/OCR rows in `document_chunk`.
-- Query understanding runs before retrieval when `QUERY_UNDERSTANDING_ENABLED=true`. It loads a terminology dictionary from `QUERY_TERMS_PATH` and expands domain wording such as `电口` into canonical retrieval terms like `RJ-45`, `RJ45`, and `以太网电接口`.
-- Retrieval runs against the bounded query set from query understanding: raw query, normalized query, dictionary alias variants, and optional LLM rewrite variants when `QUERY_REWRITE_ENABLED=true`.
+- Query understanding runs before quick retrieval when `QUERY_UNDERSTANDING_ENABLED=true`. It keeps the raw query by default and can use optional LLM rewrite variants when `QUERY_REWRITE_ENABLED=true`; it does not load a static terminology dictionary.
+- Reasoning-mode query expansion happens in the model's first `grep_chunks` arguments. The runtime validates, bounds, executes, and deduplicates those variants without owning domain synonyms.
 - Hybrid retrieval fans out to dense top 50 and BM25 top 50 by default, fuses by weighted RRF with `RRF_K=60`, `RRF_VECTOR_WEIGHT=0.7`, `RRF_KEYWORD_WEIGHT=0.3`, deduplicates by chunk id, and keeps top 30 fused candidates.
 - Explicit `doc_ids` are retrieval constraints, not just post-filters: Milvus dense/BM25 expressions, SQLite FTS5, hydration, parent recall, citation verification, and final context assembly all reject chunks outside the selected documents.
 - If `doc_ids` are provided and the selected child/table/OCR chunk count is at or below `DIRECT_LOAD_MAX_CHUNKS=50`, the service direct-loads those chunks from SQLite and skips dense/keyword recall for that request. Larger selections fall back to normal scoped retrieval.
@@ -486,15 +486,15 @@ question
   -> SQLite FTS5 top 50 per retrieval query when Milvus BM25 is disabled
   -> RRF fusion + chunk-id dedupe
   -> hydrate Milvus metadata-only hits from SQLite document_chunk
-  -> enforce same-document product type and requested-attribute constraints for product-list questions
+  -> preserve candidates for evidence evaluation
   -> optional local-first reranker
   -> SQLite parent/table/OCR context lookup
   -> prompt context -> streaming answer
 ```
 
-Query understanding is fail-open. If the dictionary is missing, malformed, disabled, or an optional rewrite call fails, retrieval continues with the raw question. With retrieval debug enabled, `debug_info.query_understanding` shows the normalized query, retrieval queries, expanded terms, applied terminology, and understanding source.
+Query understanding is fail-open. If it is disabled or an optional rewrite call fails, retrieval continues with the raw question. With retrieval debug enabled, `debug_info.query_understanding` shows the normalized query, bounded retrieval queries, extracted constraints, and understanding source.
 
-For product-list questions such as `哪些控制器有8个电口` or `找出24个光口的交换机`, answer evidence is fail-closed after retrieval: device type and requested RJ-45/optical port counts must coexist in the same source document. Explicitly conflicting device types and relationship-only documents without the requested attribute are removed before citation extraction and answer generation. Exclusions are available in `debug_info.constraint_filter` when retrieval debugging is enabled.
+The backend does not remove candidates with domain-specific regex filters. For multi-constraint tasks, the LLM performs an evidence ledger after retrieval and deep reading: each condition must be supported by evidence belonging to the same candidate or subject. Generated aliases, equivalences, and unit conversions remain hypotheses until the evidence supports them.
 
 ## Conversation And Memory Strategy
 

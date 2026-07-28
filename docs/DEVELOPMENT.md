@@ -71,7 +71,6 @@ Common optional env:
 - `FUSION_TOP_K`
 - `RETRIEVAL_DEBUG_ENABLED`
 - `QUERY_UNDERSTANDING_ENABLED`
-- `QUERY_TERMS_PATH`
 - `QUERY_REWRITE_ENABLED`
 - `QUERY_REWRITE_MAX_QUERIES`
 - `RERANKER_ENABLED`
@@ -253,8 +252,8 @@ Evidence: `frontend/package.json:5-10`.
 - Non-PDF sources open with `/documents/content`.
 - Feedback submission writes a new markdown file and refreshes the list.
 - Knowledge upload workspace handles single-file, multi-file, and folder uploads with per-file status and partial failure reporting.
-- Query understanding maps configured terminology such as `8个电口` to retrieval variants containing `RJ-45` when `QUERY_UNDERSTANDING_ENABLED=true`.
-- With `RETRIEVAL_DEBUG_ENABLED=true`, `POST /rag/query` includes `debug_info.query_understanding` so you can inspect normalized query, retrieval queries, expanded terms, and applied terminology.
+- Query understanding keeps the raw query by default. When `QUERY_REWRITE_ENABLED=true`, the LLM may add bounded aliases, abbreviations, translations, field-name variants, and relation/action variants without a static terminology file.
+- With `RETRIEVAL_DEBUG_ENABLED=true`, `POST /rag/query` includes `debug_info.query_understanding` so you can inspect the normalized query, retrieval queries, extracted constraints, and understanding source.
 - With `MILVUS_BM25_ENABLED=false`, keyword retrieval uses SQLite FTS5 and should still match exact terms such as model names, API names, config keys, and error codes.
 - `POST /rag/query` returns `answer`, `citations`, `used_chunks`, `used_entities`, `graph_paths`, `confidence`, and `debug_info`; during the Raw Evidence phase `used_entities` and `graph_paths` are empty lists.
 - With `KG_EXTRACTION_ENABLED=false`, ingest/query behavior remains Raw RAG only.
@@ -293,7 +292,7 @@ The backend now uses SQLite + Milvus for the active RAG store:
 - Enabling `MILVUS_BM25_ENABLED=true` adds `bm25_text` and `bm25_sparse` to the final collection schema; incompatible existing collections require the protected clean-rebuild command.
 - When `MILVUS_BM25_ENABLED=false`, `RAGService` uses the SQLite FTS5 keyword provider instead of scanning all chunks in Python.
 - Dense/BM25 recall defaults to 50/50 and fuses to 30 candidates before optional reranking.
-- Query understanding defaults to enabled and reads `./data/terms.yaml`. LLM rewrite remains disabled by default; enable it with `QUERY_REWRITE_ENABLED=true` after validating latency and cost.
+- Query understanding defaults to enabled and keeps the raw query unless optional LLM rewrite is enabled with `QUERY_REWRITE_ENABLED=true` after validating latency and cost.
 - Reranker is disabled by default. `RERANKER_ENABLED=true` tries a local/bge cross-encoder and falls back to NoOp if the local dependency is not installed.
 - DashScope rerank can be enabled without local model dependencies:
 

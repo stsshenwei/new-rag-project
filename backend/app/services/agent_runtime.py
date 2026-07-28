@@ -24,8 +24,6 @@ from app.models.knowledge_base import KnowledgeBaseScope
 from app.services.agent_prompt_templates import (
     AgentPromptCatalog,
     ContextPromptCatalog,
-    PromptTemplateCatalog,
-    PromptTemplateError,
     scope_to_prompt_kbs,
 )
 from app.services.agent_runtime_spans import AgentRuntimeSpanRepository
@@ -684,9 +682,6 @@ class AgentRuntime:
 
     def _preload_retrieval(self, question: str, scope: KnowledgeBaseScope) -> list[dict[str, Any]]:
         hits = self.rag_service.recall_parent_hits(self.rag_service.hybrid_retrieve_hits(question, scope=scope), scope=scope)
-        constraint_filter = getattr(self.rag_service, "filter_hits_for_question_constraints", None)
-        if callable(constraint_filter):
-            hits = constraint_filter(question, hits)
         return list(hits or [])
 
     def _build_retrieved_context(self, hits: list[dict[str, Any]]) -> str:
@@ -1131,17 +1126,12 @@ class AgentRuntime:
             if state.get("deep_read_ids")
             else "no sufficient knowledge-base evidence was found"
         )
-        try:
-            return PromptTemplateCatalog.load_directory("config/prompt_templates").render(
-                "fallback_response",
-                {"query": str(state.get("question") or ""), "reason": reason},
-                mode="reasoning",
-            )
-        except PromptTemplateError as exc:
-            logger.warning("Fallback prompt render failed, using built-in fallback: %s", exc)
         if state.get("deep_read_ids"):
-            return "已检索并读取到部分证据，但当前推理轮次不足以形成确定答案。请缩小问题范围或重试。"
-        return "无法从当前知识库证据中确定答案。"
+            return (
+                "已检索并读取到部分知识库证据，但当前证据仍不足以形成确定答案。"
+                f"原因：{reason}。建议补充更精确的对象标识、来源材料，或调整部分条件后重试。"
+            )
+        return "无法从当前知识库证据中确定答案。建议补充相关文档，或使用更明确的实体、关系和条件重新检索。"
 
     def _record_trace(
         self,

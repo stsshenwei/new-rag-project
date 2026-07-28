@@ -10,7 +10,6 @@ from app.services.rag_service import RAGService
 from app.services.query_understanding import (
     QueryUnderstandingConfig,
     QueryUnderstandingService,
-    TerminologyDictionary,
 )
 
 
@@ -152,67 +151,6 @@ class HybridRetrievalTests(unittest.TestCase):
         self.assertEqual(1, len(hits))
         self.assertEqual("p1", hits[0]["metadata"]["parent_id"])
         self.assertGreater(hits[0]["keyword_score"], 0)
-
-    def test_product_listing_filter_requires_type_and_port_count_in_same_document(self):
-        service = self.make_service()
-        hits = [
-            {
-                "content": "AC控制器license纸质授权 - 适配型号DH-AC512和DH-AC2048",
-                "metadata": {"source": "无线ACAP/AC_License16.txt"},
-            },
-            {
-                "content": "设备类型\nONU\n接入电口\n8个\nPort 1-8：8×RJ-45 1000Mbps（PoE）",
-                "metadata": {"source": "PON全光产品/ONU/DH-P208-P.txt"},
-            },
-            {
-                "content": "接入电口\n10个\n业务端口/槽位描述\nPort 1-8: 8 × RJ-45 10/100/1000Mbps；",
-                "metadata": {"source": "无线ACAP/DH-AC512.txt"},
-            },
-        ]
-
-        filtered = service.filter_hits_for_question_constraints("哪些控制器有8个电口", hits)
-
-        self.assertEqual(["无线ACAP/DH-AC512.txt"], [hit["metadata"]["source"] for hit in filtered])
-        excluded = service._last_retrieval_debug["constraint_filter"]["excluded"]
-        self.assertTrue(any("DH-P208-P" in item["source"] and "device_type_not_controller" in item["reason"] for item in excluded))
-        self.assertTrue(any("AC_License16" in item["source"] and "ethernet_port_count_not_8" in item["reason"] for item in excluded))
-
-    def test_product_listing_filter_requires_optical_port_count(self):
-        service = self.make_service()
-        hits = [
-            {
-                "content": "端口配置\n24×SFP 100/1000Mbps；4×SFP+ 1/10Gbps\n备注\n三层管理型交换机",
-                "metadata": {"source": "交换机/DH-NS5500-24GF4XF.txt"},
-            },
-            {
-                "content": "端口配置\n24×RJ-45 10/100/1000Mbps；4×SFP+ 1/10Gbps\n备注\n三层管理型交换机",
-                "metadata": {"source": "交换机/DH-S5300-24GT4XF.txt"},
-            },
-            {
-                "content": "端口配置\n16×RJ-45 10/100/1000Mbps；8×SFP 100/1000Mbps\n备注\n三层管理型以太网交换机",
-                "metadata": {"source": "交换机/DH-S5600-24GT4XF-A.txt"},
-            },
-            {
-                "content": "交换容量\n688Gbps\n端口配置\n24×SFP光口；8×RJ-45电口",
-                "metadata": {"source": "交换机/DH-NS5300-24GF8GT4XF.txt"},
-            },
-        ]
-
-        filtered = service.filter_hits_for_question_constraints("找出24个光口的交换机", hits)
-
-        self.assertEqual(
-            ["交换机/DH-NS5500-24GF4XF.txt", "交换机/DH-NS5300-24GF8GT4XF.txt"],
-            [hit["metadata"]["source"] for hit in filtered],
-        )
-        excluded = service._last_retrieval_debug["constraint_filter"]["excluded"]
-        self.assertTrue(any("DH-S5300-24GT4XF" in item["source"] and "optical_port_count_not_24" in item["reason"] for item in excluded))
-        self.assertTrue(any("DH-S5600-24GT4XF-A" in item["source"] and "optical_port_count_not_24" in item["reason"] for item in excluded))
-
-    def test_product_listing_filter_does_not_affect_general_questions(self):
-        service = self.make_service()
-        hits = [{"content": "设备类型\nONU", "metadata": {"source": "DH-P208-P.txt"}}]
-
-        self.assertEqual(hits, service.filter_hits_for_question_constraints("介绍DH-P208-P", hits))
 
     def test_keyword_retrieve_uses_milvus_bm25_when_enabled(self):
         vector_store = FakeVectorStore()
@@ -483,8 +421,12 @@ class HybridRetrievalTests(unittest.TestCase):
         self.assertEqual([1, 2], [hit["keyword_rank"] for hit in hits])
         self.assertEqual([0.0, 0.0], [hit["vector_score"] for hit in hits])
 
-    def test_hybrid_retrieve_uses_query_understanding_variants_and_deduplicates(self):
+    def test_hybrid_retrieve_uses_llm_query_variants_and_deduplicates(self):
         vector_store = FakeVectorStore()
+
+        class RewriteClient:
+            def rewrite(self, query, understanding):
+                return {"queries": ["8个RJ-45", "8个RJ45"]}
 
         def query_dense(question, top_k):
             vector_store.dense_queries.append((question, top_k))
@@ -504,8 +446,8 @@ class HybridRetrievalTests(unittest.TestCase):
         vector_store.query_dense = query_dense
         vector_store.query_bm25 = query_bm25
         query_understanding = QueryUnderstandingService(
-            dictionary=TerminologyDictionary.from_mapping({"电口": {"canonical": "RJ-45", "aliases": ["RJ45"]}}),
-            config=QueryUnderstandingConfig(enabled=True, max_queries=3),
+            rewrite_client=RewriteClient(),
+            config=QueryUnderstandingConfig(enabled=True, rewrite_enabled=True, max_queries=3),
         )
         service = RAGService(
             vector_store=vector_store,
@@ -535,7 +477,7 @@ class HybridRetrievalTests(unittest.TestCase):
         self.assertEqual({"rj45", "shared"}, {hit["metadata"]["chunk_id"] for hit in hits})
         self.assertEqual(1, len([hit for hit in hits if hit["metadata"]["chunk_id"] == "rj45"]))
         self.assertIn("query_understanding", service._last_retrieval_debug)
-        self.assertIn("RJ-45", service._last_retrieval_debug["query_understanding"]["expanded_terms"])
+        self.assertEqual("llm", service._last_retrieval_debug["query_understanding"]["source"])
 
     def test_hybrid_retrieve_reranker_reorders_when_enabled(self):
         vector_store = FakeVectorStore()
@@ -1020,10 +962,10 @@ class HybridRetrievalTests(unittest.TestCase):
         self.assertIn("Earlier summary", prompt)
         self.assertIn("previous", prompt)
         self.assertIn("document context", prompt)
-        self.assertIn("回答格式要求", prompt)
+        self.assertIn("回答要求", prompt)
         self.assertIn("直接结论", prompt)
 
-    def test_stream_answer_adds_howto_markdown_guidance_when_supported_by_context(self):
+    def test_stream_answer_uses_domain_agnostic_answer_guidance(self):
         client = FakeStreamingClient()
         service = RAGService(
             vector_store=FakeVectorStore(),
@@ -1046,15 +988,12 @@ class HybridRetrievalTests(unittest.TestCase):
 
         self.assertEqual("answer", answer)
         prompt = client.completions.calls[0]["messages"][1]["content"]
-        self.assertIn("回答格式要求", prompt)
-        self.assertIn("前提条件", prompt)
-        self.assertIn("安装步骤", prompt)
-        self.assertIn("验证", prompt)
-        self.assertIn("```bash", prompt)
-        self.assertIn("不要补充上下文没有提供的命令", prompt)
-        self.assertIn("根据提供的文档信息无法确定", prompt)
+        self.assertIn("回答要求", prompt)
+        self.assertIn("不要依赖关键词列表判断问题类型", prompt)
+        self.assertIn("步骤使用有序列表", prompt)
+        self.assertIn("根据提供的文档无法确定", prompt)
 
-    def test_stream_answer_adds_product_selection_guidance(self):
+    def test_stream_answer_uses_generic_multi_constraint_evidence_guidance(self):
         client = FakeStreamingClient()
         service = RAGService(
             vector_store=FakeVectorStore(),
@@ -1072,9 +1011,10 @@ class HybridRetrievalTests(unittest.TestCase):
         list(service.stream_answer("我需要一个能接28个分光器的OLT，帮我选一款", hits=hits))
 
         prompt = client.completions.calls[0]["messages"][1]["content"]
-        self.assertIn("至少28个可用PON口", prompt)
-        self.assertIn("推荐方案", prompt)
-        self.assertIn("不要把PON口最大分路比误写成设备的PON口数量", prompt)
+        self.assertIn("完整抽取硬性条件", prompt)
+        self.assertIn("逐个候选、逐个条件核验", prompt)
+        self.assertIn("同义词、别名、缩写", prompt)
+        self.assertNotIn("PON口最大分路比", prompt)
 
     def test_build_reasoning_summary_explains_retrieval_without_hidden_chain(self):
         service = self.make_service()
