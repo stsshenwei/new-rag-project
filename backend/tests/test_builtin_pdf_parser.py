@@ -8,8 +8,8 @@ import fitz
 from PIL import Image, ImageDraw
 
 from app.models.processing_config import ParserErrorCode
-from app.services import document_parser
-from app.services.document_parser import BuiltinPDFParser, ParserError, _select_native_pdf_text
+from app.services.documents.document_parser import BuiltinPDFParser, ParserError, _select_native_pdf_text
+from app.services.documents import document_parser
 
 
 class BuiltinPDFParserTests(unittest.TestCase):

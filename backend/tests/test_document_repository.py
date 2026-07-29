@@ -4,10 +4,10 @@ from pathlib import Path
 
 from app.models.document_models import Chunk
 from app.models.processing_config import PROCESSING_VERSION
-from app.services.document_repository import DocumentRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
-from app.services.upload_batch_repository import UploadBatchRepository
+from app.services.documents.document_repository import DocumentRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
+from app.services.documents.upload_batch_repository import UploadBatchRepository
 
 
 class DocumentRepositoryTests(unittest.TestCase):

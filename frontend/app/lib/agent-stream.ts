@@ -822,6 +822,7 @@ function localizePublicSummary(value: string): string {
   const labels: Record<string, string> = {
     "Received user question.": "已收到用户问题。",
     "Understanding the question and preparing knowledge-base retrieval.": "正在理解问题，并准备检索知识库。",
+    "Analyzing the question and selecting the next action.": "正在分析问题并选择下一步。",
     "Analyzing the question.": "正在分析问题。",
   };
   return labels[value] || value;
@@ -829,9 +830,9 @@ function localizePublicSummary(value: string): string {
 
 function extractQuery(value?: string): string | undefined {
   if (!value) return undefined;
-  const quoted = value.match(/[“"']([^“”"']{2,120})[”"']/);
+  const quoted = value.match(/[“"']([^“”"']{2,320})[”"']/);
   if (quoted?.[1]) return quoted[1].trim();
-  const colon = value.match(/^[^:：]{1,80}[:：]\s*(.{2,160})$/);
+  const colon = value.match(/^[^:：]{1,80}[:：]\s*(.{2,360})$/);
   if (colon?.[1]) return colon[1].trim();
   return undefined;
 }

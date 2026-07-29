@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 
-from app.services.embedding_provider import OpenAIEmbeddingProvider
+from app.services.retrieval.embedding_provider import OpenAIEmbeddingProvider
 
 
 class FakeEmbeddings:

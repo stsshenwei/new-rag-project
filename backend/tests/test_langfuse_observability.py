@@ -6,8 +6,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from app.services.embedding_provider import OpenAIEmbeddingProvider
-from app.services.observability import (
+from app.services.retrieval.embedding_provider import OpenAIEmbeddingProvider
+from app.services.infrastructure.observability import (
     LangfuseObservabilitySink,
     NoopObservabilitySink,
     ObservabilityConfig,
@@ -17,9 +17,9 @@ from app.services.observability import (
     sanitize_observability_payload,
     set_observability_sink,
 )
-from app.services.processing_trace import ProcessingTraceRecorder
-from app.services.rag_service import RAGService
-from app.services.reranker import DashScopeReranker
+from app.services.processing.processing_trace import ProcessingTraceRecorder
+from app.services.retrieval.rag_service import RAGService
+from app.services.retrieval.reranker import DashScopeReranker
 
 
 class RecordingGeneration:

@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.rag_service import RAGService
+from app.services.retrieval.rag_service import RAGService
 
 
 class FakeVectorStore:

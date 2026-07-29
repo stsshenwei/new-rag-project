@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from app.services.adaptive_chunker import AdaptiveChunkConfig, profile_document, split_with_diagnostics
+from app.services.documents.adaptive_chunker import AdaptiveChunkConfig, profile_document, split_with_diagnostics
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "document_processing_cases.json"

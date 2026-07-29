@@ -1,8 +1,8 @@
 import unittest
 from types import SimpleNamespace
 
-from app.services.llm_provider import INSUFFICIENT_CONTEXT_ANSWER, OpenAICompatibleLLMProvider
-from app.services.retrieval_models import BuiltContext
+from app.services.retrieval.llm_provider import INSUFFICIENT_CONTEXT_ANSWER, OpenAICompatibleLLMProvider
+from app.services.retrieval.retrieval_models import BuiltContext
 
 
 class FakeCompletions:

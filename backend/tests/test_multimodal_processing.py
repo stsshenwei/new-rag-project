@@ -1,7 +1,7 @@
 import unittest
 
 from app.models.document_models import ParsedImage
-from app.services.multimodal_processing import DisabledOCRProvider, MultimodalResult, image_result_chunk
+from app.services.documents.multimodal_processing import DisabledOCRProvider, MultimodalResult, image_result_chunk
 
 
 class MultimodalProcessingTests(unittest.TestCase):

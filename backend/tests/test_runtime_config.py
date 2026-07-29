@@ -39,7 +39,7 @@ class RuntimeConfigTests(unittest.TestCase):
                 **env,
             }
             with patch.dict(os.environ, full_env, clear=False):
-                with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+                with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
                     module = importlib.import_module("app.main")
                     return module.build_rag_service()
 
@@ -218,6 +218,15 @@ class RuntimeConfigTests(unittest.TestCase):
                 "AGENT_RUNTIME_DATA_ANALYSIS_ENABLED": "true",
                 "AGENT_RUNTIME_DATABASE_QUERY_ENABLED": "true",
                 "AGENT_RUNTIME_DATABASE_SOURCES": "main=./vector_db/rag_metadata.sqlite3",
+                "AGENT_RUNTIME_MAX_REPEATED_TOOL_BATCHES": "3",
+                "AGENT_RUNTIME_MAX_LLM_CALLS": "9",
+                "AGENT_RUNTIME_MAX_TOOL_CALLS": "18",
+                "AGENT_RUNTIME_MAX_WALL_CLOCK_SECONDS": "45",
+                "AGENT_RUNTIME_MAX_PARALLEL_WORKERS": "6",
+                "AGENT_RUNTIME_LOCAL_CONCURRENCY_ENABLED": "false",
+                "AGENT_RUNTIME_PARALLEL_TOOL_CALLS_MODE": "on",
+                "AGENT_RUNTIME_TERMINAL_STREAMING_MODE": "off",
+                "AGENT_RUNTIME_LEGACY_REMEDIAL_RETRIEVAL_ENABLED": "true",
             }
         )
 
@@ -229,6 +238,15 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertTrue(service.agent_runtime.config.data_analysis_enabled)
         self.assertTrue(service.agent_runtime.config.database_query_enabled)
         self.assertEqual({"main": "./vector_db/rag_metadata.sqlite3"}, service.agent_runtime.config.database_allowed_sources)
+        self.assertEqual(3, service.agent_runtime.config.max_repeated_tool_batches)
+        self.assertEqual(9, service.agent_runtime.config.max_llm_calls)
+        self.assertEqual(18, service.agent_runtime.config.max_tool_calls)
+        self.assertEqual(45.0, service.agent_runtime.config.max_wall_clock_seconds)
+        self.assertEqual(6, service.agent_runtime.config.max_parallel_workers)
+        self.assertFalse(service.agent_runtime.config.local_concurrency_enabled)
+        self.assertEqual("on", service.agent_runtime.config.parallel_tool_calls_mode)
+        self.assertEqual("off", service.agent_runtime.config.terminal_streaming_mode)
+        self.assertTrue(service.agent_runtime.config.legacy_remedial_retrieval_enabled)
         self.assertEqual(
             ["data_analysis", "database_query", "execute_skill", "web_fetch", "web_search"],
             service.agent_runtime.tool_registry.list_tools(),
@@ -352,7 +370,7 @@ rag:
                 "CONTEXT_EXPANDED_CHUNK_MAX_CHARS": "",
             }
             with patch.dict(os.environ, env, clear=False):
-                with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+                with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
                     module = importlib.import_module("app.main")
                     service = module.build_rag_service()
 
@@ -388,7 +406,7 @@ rag:
                 "KG_EXTRACTION_ENABLED": "false",
             }
             with patch.dict(os.environ, env, clear=False):
-                with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+                with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
                     module = importlib.import_module("app.main")
                     from fastapi.testclient import TestClient
 

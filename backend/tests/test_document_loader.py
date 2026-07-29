@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.document_loader import (
+from app.services.documents.document_loader import (
     SUPPORTED_EXTS,
     build_parent_child_chunks,
     iter_source_files,

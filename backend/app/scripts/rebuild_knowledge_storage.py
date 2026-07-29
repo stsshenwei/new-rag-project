@@ -7,7 +7,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from app.services.storage_reset import (
+from app.services.storage.storage_reset import (
     KnowledgeStorageResetCoordinator,
     ManagedFilesResetProvider,
     MilvusCollectionsResetProvider,
@@ -15,7 +15,7 @@ from app.services.storage_reset import (
     RESET_CONFIRMATION,
     SQLiteStorageResetProvider,
 )
-from app.services.storage_schema import (
+from app.services.storage.storage_schema import (
     DefaultKnowledgeBaseSettings,
     initialize_evaluation_database,
     initialize_metadata_database,

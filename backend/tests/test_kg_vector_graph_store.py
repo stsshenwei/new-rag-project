@@ -4,8 +4,8 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from app.models.kg_models import Entity, GraphPath, Relation
-from app.services.entity_vector_store import MilvusEntityVectorStore, _validate_entity_collection_schema
-from app.services.graph_store import Neo4jGraphStore
+from app.services.kg.entity_vector_store import MilvusEntityVectorStore, _validate_entity_collection_schema
+from app.services.kg.graph_store import Neo4jGraphStore
 
 
 class FakeEmbeddingProvider:
@@ -132,7 +132,7 @@ class KGVectorGraphStoreTests(unittest.TestCase):
 
     def test_neo4j_graph_store_import_is_lazy(self):
         sys.modules.pop("neo4j", None)
-        import app.services.graph_store as graph_store
+        import app.services.kg.graph_store as graph_store
 
         self.assertFalse(hasattr(graph_store, "GraphDatabase"))
 

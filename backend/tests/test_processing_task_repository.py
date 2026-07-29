@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.processing_task_repository import (
+from app.services.processing.processing_task_repository import (
     ProcessingTaskRepository,
     TASK_CANCELED,
     TASK_COMPLETED,

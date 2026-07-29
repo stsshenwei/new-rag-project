@@ -1,7 +1,7 @@
 import unittest
 
-from app.services.hybrid_retriever import HybridRetriever
-from app.services.retrieval_models import RetrievedChunk
+from app.services.retrieval.hybrid_retriever import HybridRetriever
+from app.services.retrieval.retrieval_models import RetrievedChunk
 
 
 class FakeEmbedding:

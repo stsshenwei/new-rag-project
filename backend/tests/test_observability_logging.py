@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from app.services.logging_config import (
+from app.services.infrastructure.logging_config import (
     configure_logging_from_env,
     sanitize_payload,
     summarize_body,
@@ -128,7 +128,7 @@ class ObservabilityLoggingTests(unittest.TestCase):
             "LOG_FORMAT": "%level %traceId %msg",
         }
         with patch.dict(os.environ, env, clear=False):
-            with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+            with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
                 return importlib.import_module("app.main")
 
     def test_request_trace_id_header_is_returned_and_logged(self):

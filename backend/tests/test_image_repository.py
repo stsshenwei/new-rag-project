@@ -4,9 +4,9 @@ from pathlib import Path
 
 from app.models.document_models import ParsedImage
 from app.models.knowledge_base import KnowledgeBase, KnowledgeBaseScope
-from app.services.document_repository import DocumentRepository
-from app.services.image_repository import ImageRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.documents.document_repository import DocumentRepository
+from app.services.documents.image_repository import ImageRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
 
 
 class ImageRepositoryTests(unittest.TestCase):

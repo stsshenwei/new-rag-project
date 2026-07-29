@@ -52,9 +52,11 @@ Rationale: prompt-only control is brittle. A lightweight guard keeps behavior co
 
 Alternative considered: force `tool_choice` to `grep_chunks` for the first model call. That is deterministic but too rigid for non-retrieval questions and for future reasoning policies.
 
-### Decision 3: Structured grep arguments are canonical, regex-style `query` remains compatible
+### Decision 3: One packed alternation call is the prompt default, structured arguments remain supported
 
-`grep_chunks` should accept the existing single `query` string and a new structured shape:
+For the common case, the prompt should prefer one packed grep call per search objective: choose the 2-3 highest-value alternatives and pass them as one simple `term1|term2|term3` query. This reduces repeated tool calls while preserving provider-safe alternation normalization.
+
+`grep_chunks` should also accept a structured shape when genuinely distinct hard constraints cannot be represented by one packed query:
 
 ```json
 {
@@ -67,7 +69,7 @@ Alternative considered: force `tool_choice` to `grep_chunks` for the first model
 
 The tool execution layer should normalize both forms into bounded search variants. If the model provides `query: "A|B|C"`, the backend may split simple alternation into variants for SQLite FTS/BM25 providers that do not implement regex OR semantics.
 
-Rationale: Weknora can depend on regex-capable grep. This project currently passes `query` to `keyword_retrieve_hits`, where `|` may not behave as OR for every provider. Structured arguments preserve the model's intent and make execution reliable.
+Rationale: Weknora can depend on regex-capable grep. This project currently passes normalized variants to `keyword_retrieve_hits`, where `|` may not behave as OR for every provider. A packed model-facing query encourages one-call recall, while normalization and optional structured fields preserve reliable execution.
 
 Alternative considered: keep only regex-like strings. That looks familiar to the model but can silently under-recall when the keyword backend treats the string literally.
 
@@ -79,29 +81,28 @@ Rationale: grep-first improves recall, but it does not prove the answer. The fin
 
 Alternative considered: allow final answers from high-confidence grep snippets. That would be faster but would weaken evidence quality and contradict the existing runtime guard.
 
-### Decision 5: Prompt optimization adapts Weknora, not copies it
+### Decision 5: Prompt structure follows Weknora while project-specific contracts remain truthful
 
-The `progressive_rag_agent` prompt should be rewritten around this shape:
+The `progressive_rag_agent` prompt should follow Weknora's complete Assess-Reconnaissance-Plan-Execute structure:
 
 ```text
 Role: Bee, an evidence-first retrieval assistant for isolated knowledge bases.
 
-Critical rules:
-1. Fresh retrieval for every new factual/domain KB question.
-2. First KB retrieval action: grep_chunks.
-3. In grep arguments, use your language/domain knowledge to include aliases, abbreviations, English names, legacy names, product names, and action/time variants.
-4. Then use knowledge_search for semantic expansion when needed.
-5. Deep-read candidate evidence before any factual final answer.
-6. Visible thoughts and traces are public audit summaries; never expose internal IDs, raw prompts, raw tool parameters, or hidden reasoning.
-7. If deep-read evidence is insufficient, say the KB does not contain enough information.
-
 Workflow:
-Assess -> Reconnaissance -> Plan -> Execute -> Reflect -> Final Synthesis
+Intent Assessment
+-> Phase 1: grep_chunks + knowledge_search reconnaissance
+-> mandatory Deep Read
+-> Phase 2: direct answer or work plan
+-> Phase 3: sequential search, Deep Read, reflection, and gap repair
+-> Phase 4: final synthesis with no tool calls
+
+Strict retrieval sequence:
+packed grep alternation -> semantic expansion -> full-content Deep Read
 ```
 
-Rationale: the useful behavior is Weknora's retrieval discipline, not its branding, storage details, web fallback defaults, FAQ-specific parameter names, or inline citation tag format.
+Rationale: the useful behavior is Weknora's full retrieval discipline and phase structure. Bee identity, storage behavior, tool schemas, Web availability, and source rendering still need to describe this project accurately.
 
-Alternative considered: paste the Weknora prompt directly. That would conflict with this project's identity, frontend display rules, citation behavior, and tool schemas.
+Alternative considered: paste every Weknora-specific sentence verbatim. That would incorrectly claim Tencent identity, FAQ-only parameters, PostgreSQL POSIX regex behavior, and unsupported inline citation tags.
 
 ### Decision 6: Trace shows safe planning summaries
 

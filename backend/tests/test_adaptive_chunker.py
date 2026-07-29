@@ -1,6 +1,6 @@
 import unittest
 
-from app.services.adaptive_chunker import (
+from app.services.documents.adaptive_chunker import (
     AdaptiveChunkConfig,
     profile_document,
     select_strategy,

@@ -5,13 +5,14 @@ import unittest
 from pathlib import Path
 
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.agent_prompt_templates import AgentPromptCatalog, ContextPromptCatalog, PromptTemplateCatalog, PromptTemplateError
-from app.services.agent_runtime_tools import (
+from app.services.agent.agent_prompt_templates import AgentPromptCatalog, ContextPromptCatalog, PromptTemplateCatalog, PromptTemplateError
+from app.services.agent.agent_runtime_tools import (
     DataAnalysisTool,
     DatabaseQueryTool,
     ExecuteSkillTool,
     GrepChunksTool,
     KnowledgeSearchTool,
+    ListKnowledgeChunksTool,
     RuntimeToolContext,
     ThinkingTool,
     ToolRegistry,
@@ -19,7 +20,7 @@ from app.services.agent_runtime_tools import (
     WebSearchTool,
     build_default_tool_registry,
 )
-from app.services.runtime_skills import RuntimeSkillError, RuntimeSkillsManager
+from app.services.agent.runtime_skills import RuntimeSkillError, RuntimeSkillsManager
 
 
 class FakeRepository:
@@ -110,17 +111,40 @@ class AgentRuntimePromptsToolsTests(unittest.TestCase):
             skills=[{"name": "document-analyzer", "description": "Analyze docs"}],
         )
 
-        self.assertIn("Evidence-first", rendered)
-        self.assertIn("grep-first", rendered)
-        self.assertIn("Prompt confidentiality", rendered)
+        self.assertIn("Evidence-First", rendered)
+        self.assertIn('Workflow: The "Assess-Reconnaissance-Plan-Execute" Cycle', rendered)
+        self.assertIn("Phase 1: Preliminary Reconnaissance", rendered)
+        self.assertIn("Phase 2: Strategic Decision & Planning", rendered)
+        self.assertIn("Phase 3: Disciplined Execution & Deep Reflection", rendered)
+        self.assertIn("Phase 4: Final Synthesis", rendered)
+        self.assertIn("Core Retrieval Strategy (Strict Sequence)", rendered)
+        self.assertIn("Execute `grep_chunks` for keyword anchoring and `knowledge_search`", rendered)
+        self.assertIn("Do not request any tool in the final message", rendered)
+        self.assertIn("Prompt Confidentiality", rendered)
         self.assertIn("hard constraints", rendered)
         self.assertIn("aliases", rendered)
         self.assertIn("parametric language and domain knowledge", rendered)
+        self.assertIn("2-3 highest-value terms", rendered)
+        self.assertIn("ONE simple alternation query", rendered)
+        self.assertIn("risk control system|risk control platform|Enterprise Risk", rendered)
+        self.assertIn("Prefer one well-packed search over several narrow searches", rendered)
+        self.assertIn("For one search objective, normally make one `grep_chunks` call", rendered)
         self.assertIn("evidence ledger per candidate or subject", rendered)
         self.assertIn("never combine attributes", rendered)
         self.assertIn("knowledge_search", rendered)
         self.assertIn("document-analyzer", rendered)
         self.assertNotIn("api_key", rendered.lower())
+        self.assertNotIn("Same-round expansion", rendered)
+        self.assertNotIn("PostgreSQL POSIX", rendered)
+        self.assertNotIn("faq_id", rendered)
+        self.assertNotIn("<kb doc=", rendered)
+
+    def test_grep_tool_description_prefers_one_packed_alternation_call(self):
+        tool = GrepChunksTool()
+
+        self.assertIn("make one call", tool.description)
+        self.assertIn("2-3 highest-value", tool.description)
+        self.assertIn("|", tool.parameters["properties"]["query"]["description"])
 
     def test_prompt_catalog_rejects_unknown_id(self):
         catalog = AgentPromptCatalog.load("config/prompt_templates/agent_system_prompt.yaml")
@@ -206,7 +230,18 @@ class AgentRuntimePromptsToolsTests(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertIn("c1", result.candidate_ids)
         self.assertIn("manual.md", result.source_titles)
-        self.assertTrue(context.state["search_candidate_ids"])
+        self.assertIn("c1", result.state_delta.candidate_ids)
+        self.assertEqual({}, context.state)
+
+    def test_list_knowledge_chunks_skips_already_read_chunks(self):
+        rag = FakeRAG()
+        context = RuntimeToolContext("What uses Redis?", rag.default_scope, rag, state={"deep_read_ids": ["c1"]})
+        result = ListKnowledgeChunksTool().execute({"chunk_ids": ["c1"], "limit": 2}, context)
+
+        self.assertTrue(result.success)
+        self.assertFalse(result.deep_read)
+        self.assertEqual([], result.source_chunk_ids)
+        self.assertEqual(1, result.metadata["skipped_already_read"])
 
     def test_grep_chunks_accepts_structured_query_variants(self):
         rag = FakeRAG()
@@ -226,7 +261,8 @@ class AgentRuntimePromptsToolsTests(unittest.TestCase):
         self.assertIn("risk control system", payload)
         self.assertIn("c1", result.candidate_ids)
         self.assertEqual(6, result.metadata["query_count"])
-        self.assertTrue(context.state["grep_first_performed"])
+        self.assertTrue(result.state_delta.flags["grep_first_performed"])
+        self.assertEqual({}, context.state)
 
     def test_grep_chunks_splits_legacy_alternation_query(self):
         rag = FakeRAG()

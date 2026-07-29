@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.object_storage import LocalObjectStorage
+from app.services.documents.object_storage import LocalObjectStorage
 
 
 class LocalObjectStorageTests(unittest.TestCase):

@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.memory_repository import MemoryRepository
-from app.services.memory_service import MemoryService
+from app.services.memory.memory_repository import MemoryRepository
+from app.services.memory.memory_service import MemoryService
 
 
 class MemoryServiceTests(unittest.TestCase):

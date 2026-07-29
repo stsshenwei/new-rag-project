@@ -2,7 +2,7 @@ import unittest
 
 from app.models.kg_models import Entity, GraphPath, Relation
 from app.models.graph_retrieval import GraphRetrievalResult
-from app.services.graph_retriever import GraphRetriever
+from app.services.kg.graph_retriever import GraphRetriever
 
 
 class FakeEvidenceRepository:

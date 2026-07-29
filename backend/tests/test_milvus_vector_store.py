@@ -4,7 +4,7 @@ from unittest.mock import patch
 from app.models.document_models import Chunk
 from app.models.knowledge_base import KnowledgeBaseScope
 from app.models.processing_config import PROCESSING_VERSION
-from app.services.vector_store import MilvusSchemaResetRequired, MilvusVectorStore, _create_or_load_collection
+from app.services.retrieval.vector_store import MilvusSchemaResetRequired, MilvusVectorStore, _create_or_load_collection
 
 
 class FakeProvider:
@@ -78,7 +78,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
         class FakeCollection:
             pass
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()) as factory:
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()) as factory:
             MilvusVectorStore(
                 uri="http://127.0.0.1:19530",
                 token="root:Milvus",
@@ -102,7 +102,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def num_entities(self):
                 return len(inserted)
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -160,7 +160,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def flush(self):
                 pass
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -185,7 +185,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def num_entities(self):
                 return 1
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -202,7 +202,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def num_entities(self):
                 return 1
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -253,7 +253,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def num_entities(self):
                 return 1
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -287,7 +287,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def flush(self):
                 pass
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -318,7 +318,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def flush(self):
                 calls.append(("flush", None))
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore(
                 uri="fake",
                 token="root:Milvus",
@@ -355,7 +355,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
             def num_entities(self):
                 return 1
 
-        with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
             store = MilvusVectorStore("fake", "", "rag_chunk_vectors", 2, FakeProvider(), bm25_enabled=True)
             scope = KnowledgeBaseScope("ws-1", ("kb-1", "kb-2"), document_ids=("doc-1", "doc-2"))
             store.query_dense("query", 5, scope=scope)
@@ -370,7 +370,7 @@ class MilvusVectorStoreTests(unittest.TestCase):
 
     def test_incompatible_collection_exposes_reset_required_and_refuses_reads_and_writes(self):
         with patch(
-            "app.services.vector_store._create_or_load_collection",
+            "app.services.retrieval.vector_store._create_or_load_collection",
             side_effect=MilvusSchemaResetRequired("requires reset"),
         ):
             store = MilvusVectorStore("fake", "", "rag_chunk_vectors", 2, FakeProvider())

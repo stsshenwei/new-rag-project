@@ -3,8 +3,8 @@ import tempfile
 from pathlib import Path
 
 from app.models.document_models import Chunk
-from app.services.document_repository import DocumentRepository
-from app.services.keyword_search import MilvusKeywordSearch, SQLiteFTSKeywordSearch
+from app.services.documents.document_repository import DocumentRepository
+from app.services.retrieval.keyword_search import MilvusKeywordSearch, SQLiteFTSKeywordSearch
 
 
 class FakeMilvusStore:

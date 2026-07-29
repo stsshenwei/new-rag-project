@@ -5,10 +5,10 @@ from pathlib import Path
 from app.models.document_models import Chunk
 from app.models.kg_models import Entity, EntityMention, GraphPath, Relation
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.document_repository import DocumentRepository
-from app.services.kg_repository import KGRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
+from app.services.documents.document_repository import DocumentRepository
+from app.services.kg.kg_repository import KGRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
 
 
 class KGModelsRepositoryTests(unittest.TestCase):

@@ -9,11 +9,11 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from app.services.document_repository import DocumentRepository
+from app.services.documents.document_repository import DocumentRepository
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
-from app.services.temporary_attachment_repository import TemporaryAttachmentRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
+from app.services.documents.temporary_attachment_repository import TemporaryAttachmentRepository
 
 
 class FakeCollection:
@@ -376,7 +376,7 @@ class RagApiRouteTests(unittest.TestCase):
                 "AUTO_INGEST_ON_STARTUP": "false",
             }
             with patch.dict(os.environ, env, clear=False):
-                with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+                with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
                     return importlib.import_module("app.main")
 
     def test_rag_upload_ingest_query_and_delete_routes(self):

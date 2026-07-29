@@ -97,12 +97,12 @@ The backend has Raw Evidence and optional Knowledge Graph foundation layers:
 | Layer | Files | Responsibility |
 |---|---|---|
 | HTTP entrypoint | `backend/app/main.py` | env loading, app wiring, routes, startup behavior |
-| Application service | `backend/app/services/rag_service.py` | ingest orchestration, retrieval filtering, context assembly, feedback persistence |
-| Infrastructure helpers | `backend/app/services/vector_store.py`, `backend/app/services/document_loader.py`, `backend/app/services/query_understanding.py` | embeddings/vector DB, file parsing/chunking, pre-retrieval terminology expansion |
-| KG foundation | `backend/app/services/kg_service.py`, `kg_repository.py`, `kg_extractor.py`, `entity_resolver.py`, `entity_vector_store.py`, `graph_store.py` | optional parent-chunk KG extraction, mention persistence, entity resolution, entity vector upsert, and evidence-bound graph writes |
-| Graph retrieval | `backend/app/services/graph_retriever.py`, `backend/app/services/graph_store.py`, `backend/app/models/graph_retrieval.py` | read-only entity search, neighbor search, path search, and graph context building for later Agent tools |
-| Agentic retrieval | `backend/app/services/query_router.py`, `retrieval_planner.py`, `agent_tools.py`, `agentic_workflow.py`, `citation_verifier.py`, `backend/app/models/agentic_retrieval.py` | optional finite-state workflow that routes questions, runs approved evidence tools, fuses evidence, verifies citations, and returns enterprise query fields |
-| Evaluation suite | `backend/app/services/evaluation_*.py`, `backend/app/models/evaluation.py` | optional replay, scoring, storage, and reporting for curated enterprise RAG/GraphRAG/Agentic evaluation datasets |
+| Application service | `backend/app/services/retrieval/rag_service.py` | ingest orchestration, retrieval filtering, context assembly, feedback persistence |
+| Infrastructure helpers | `backend/app/services/retrieval/vector_store.py`, `backend/app/services/documents/document_loader.py`, `backend/app/services/retrieval/query_understanding.py` | embeddings/vector DB, file parsing/chunking, pre-retrieval terminology expansion |
+| KG foundation | `backend/app/services/kg/kg_service.py`, `backend/app/services/kg/kg_repository.py`, `backend/app/services/kg/kg_extractor.py`, `backend/app/services/kg/entity_resolver.py`, `backend/app/services/kg/entity_vector_store.py`, `backend/app/services/kg/graph_store.py` | optional parent-chunk KG extraction, mention persistence, entity resolution, entity vector upsert, and evidence-bound graph writes |
+| Graph retrieval | `backend/app/services/kg/graph_retriever.py`, `backend/app/services/kg/graph_store.py`, `backend/app/models/graph_retrieval.py` | read-only entity search, neighbor search, path search, and graph context building for later Agent tools |
+| Agentic retrieval | `backend/app/services/agent/query_router.py`, `backend/app/services/agent/retrieval_planner.py`, `backend/app/services/agent/agent_tools.py`, `backend/app/services/agent/agentic_workflow.py`, `backend/app/services/retrieval/citation_verifier.py`, `backend/app/models/agentic_retrieval.py` | optional finite-state workflow that routes questions, runs approved evidence tools, fuses evidence, verifies citations, and returns enterprise query fields |
+| Evaluation suite | `backend/app/services/evaluation/evaluation_*.py`, `backend/app/models/evaluation.py` | optional replay, scoring, storage, and reporting for curated enterprise RAG/GraphRAG/Agentic evaluation datasets |
 
 ### Core Processing Runtime
 
@@ -153,10 +153,10 @@ sequenceDiagram
 
 Key details:
 
-- source files are discovered recursively under `data_dir`, excluding temporary Office lock files, and are limited to configured extensions. Evidence: `backend/app/services/document_loader.py:16-21`.
-- ingest rebuilds the collection from scratch before upserting new child chunks. Evidence: `backend/app/services/rag_service.py`, `backend/app/services/vector_store.py:47-64`.
-- PDF files take a different chunking path that first preserves markdown header structure. Evidence: `backend/app/services/document_loader.py:99-119`, `backend/app/services/document_loader.py:139-174`.
-- retrieval combines Milvus dense hits with Milvus BM25 when enabled or SQLite FTS5 keyword hits when BM25 is disabled, then recalls parent chunks for answer context. Evidence: `backend/app/services/rag_service.py`, `backend/app/services/document_repository.py`.
+- source files are discovered recursively under `data_dir`, excluding temporary Office lock files, and are limited to configured extensions. Evidence: `backend/app/services/documents/document_loader.py:16-21`.
+- ingest rebuilds the collection from scratch before upserting new child chunks. Evidence: `backend/app/services/retrieval/rag_service.py`, `backend/app/services/retrieval/vector_store.py:47-64`.
+- PDF files take a different chunking path that first preserves markdown header structure. Evidence: `backend/app/services/documents/document_loader.py:99-119`, `backend/app/services/documents/document_loader.py:139-174`.
+- retrieval combines Milvus dense hits with Milvus BM25 when enabled or SQLite FTS5 keyword hits when BM25 is disabled, then recalls parent chunks for answer context. Evidence: `backend/app/services/retrieval/rag_service.py`, `backend/app/services/documents/document_repository.py`.
 
 ## Streaming Answer Flow
 
@@ -181,7 +181,7 @@ sequenceDiagram
     API-->>FE: [DONE]
 ```
 
-Evidence: `backend/app/main.py:113-133`, `backend/app/services/rag_service.py:276-300`, `frontend/app/page.tsx:136-204`.
+Evidence: `backend/app/main.py:113-133`, `backend/app/services/retrieval/rag_service.py:276-300`, `frontend/app/page.tsx:136-204`.
 
 ## Feedback Learning Loop
 
@@ -193,7 +193,7 @@ When a user marks an answer as incorrect and submits a correction:
 4. the backend chunks that markdown and upserts it into the vector store
 5. the frontend refreshes the dataset list
 
-Evidence: `frontend/app/page.tsx:221-287`, `backend/app/services/rag_service.py:207-274`.
+Evidence: `frontend/app/page.tsx:221-287`, `backend/app/services/retrieval/rag_service.py:207-274`.
 
 ## Storage Layout
 
@@ -285,6 +285,20 @@ The workflow is not a free-form Agent. `QueryRouter` classifies questions as `fa
 
 `/chat/stream` can also use the Agentic Retrieval workflow when `CHAT_AGENTIC_WORKFLOW_ENABLED=true`. In that mode the backend streams FSM progress as SSE before answer tokens: `agent_trace`, `tool_call`, `tool_observation`, `evidence_summary`, and `citation_verification`. Existing chat events remain compatible: `conversation_id`, `sources`, `reasoning`, `token`, `memory_updated`, and `[DONE]`.
 
+## Autonomous ReAct Runtime
+
+When `AGENT_RUNTIME_ENABLED=true`, reasoning chat uses a model-directed ReAct loop. A Think phase is the tool-enabled LLM request itself; the optional `thinking` tool only publishes a bounded audit summary and is never required before retrieval.
+
+Each model response creates one ordered action batch. The controller validates the complete batch before execution, classifies every call as `parallel_safe`, `serial`, or `exclusive`, and runs only contiguous parallel-safe calls concurrently. Serial and exclusive calls create barriers. Workers receive immutable request context and a pre-batch state snapshot, return `RuntimeStateDelta` values, and never mutate the shared event stream or runtime state. Results may physically finish out of order, but tool messages, state deltas, sources, and public lifecycle events are committed in the model-declared order.
+
+The model may issue `grep_chunks`, `knowledge_search`, or graph retrieval together in one round. If its first selected knowledge-base retrieval batch does not include `grep_chunks`, the runtime returns a concise guard observation; this is a batch-local evidence rule, not lexical intent classification. Synonyms, aliases, translations, abbreviations, model fragments, and equivalent parameter expressions are generated by the LLM directly in request-local tool arguments. No domain synonym dictionary or controller-generated corrective query is required.
+
+Search candidates require a later model-selected full-content read before a factual final answer. After each observation, the model may read multiple documents in one batch, retry with a new query, select another tool, or answer directly. Default execution does not perform controller-selected remedial retrieval. The previous remediation path is available only through `AGENT_RUNTIME_LEGACY_REMEDIAL_RETRIEVAL_ENABLED=true`.
+
+The runtime has independent limits for action rounds, LLM calls, tool calls, wall time, repeated unchanged action signatures, and local workers. Budget exhaustion uses one reserved tools-disabled synthesis call when deep-read evidence exists; otherwise it emits a deterministic localized insufficient-evidence response. Provider capabilities for parallel tool-call parameters and terminal streaming use `auto`, `on`, or `off`; an unsupported parallel parameter is retried once without the option and cached per model.
+
+Public events keep the existing names and add metadata including batch id, call id, call index, execution class, queue time, tool duration, physical completion index, batch duration, model latency, budget values, stop reason, and provider fallback state. References are emitted before answer tokens, `agent_complete` follows all child calls, and the final compatibility event remains last.
+
 ## Milvus And Docling Update
 
 The current target architecture replaces Chroma as the active vector store:
@@ -297,7 +311,7 @@ The current target architecture replaces Chroma as the active vector store:
 - Table chunks are preserved as whole structures. Their embedding text uses title path, caption, nearby text, generated summary, fields, rows, and Markdown; LLM context uses the original Markdown/HTML table plus nearby explanation.
 - `RAGService.hybrid_retrieve_hits` performs query understanding, dense fan-out, keyword fan-out through Milvus BM25 or SQLite FTS5, RRF fusion, chunk-id dedupe, optional local-first reranking, and parent recall.
 - Raw retrieval boundaries are exposed through provider protocols for vector index access, keyword search, and evidence lookup so future GraphRAG and Agent tools can call the Raw Evidence Layer without binding to one backend.
-- `backend/app/services/reranker.py` keeps reranking default-disabled and falls back to NoOp when local model dependencies are unavailable.
+- `backend/app/services/retrieval/reranker.py` keeps reranking default-disabled and falls back to NoOp when local model dependencies are unavailable.
 - `EmbeddingProvider` abstracts embedding calls so OpenAI-compatible embeddings can later be swapped for bge-m3, Qwen embeddings, or local models.
 
 `backend/chroma_db/` is legacy persisted data. Do not edit or delete it unless cleanup is explicitly requested.

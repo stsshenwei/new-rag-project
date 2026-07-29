@@ -1,6 +1,6 @@
 import unittest
 
-from app.services.retrieval_models import Answer, BuiltContext, Citation, RetrievedChunk
+from app.services.retrieval.retrieval_models import Answer, BuiltContext, Citation, RetrievedChunk
 
 
 class RetrievalModelTests(unittest.TestCase):

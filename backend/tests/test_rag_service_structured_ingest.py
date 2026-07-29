@@ -8,14 +8,14 @@ from types import SimpleNamespace
 
 from app.models.document_models import Chunk, ParsedDocument, ParsedElement, ParsedImage
 from app.models.processing_config import PROCESSING_VERSION, ProcessingRuntimeDefaults
-from app.services.document_chunker import DocumentChunker
-from app.services.document_repository import DocumentRepository
-from app.services.image_repository import ImageRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
-from app.services.processing_span_tracker import ProcessingSpanRepository, ProcessingSpanTracker
-from app.services.processing_trace import ProcessingTraceRecorder
-from app.services.rag_service import RAGService
+from app.services.documents.document_chunker import DocumentChunker
+from app.services.documents.document_repository import DocumentRepository
+from app.services.documents.image_repository import ImageRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
+from app.services.processing.processing_span_tracker import ProcessingSpanRepository, ProcessingSpanTracker
+from app.services.processing.processing_trace import ProcessingTraceRecorder
+from app.services.retrieval.rag_service import RAGService
 
 
 class FakeParser:
@@ -213,7 +213,7 @@ class FakeOCRProvider:
         self.max_active = 0
 
     def extract_text(self, image, mime_type):
-        from app.services.multimodal_processing import MultimodalResult
+        from app.services.documents.multimodal_processing import MultimodalResult
 
         with self._lock:
             self.calls.append((image, mime_type))
@@ -238,7 +238,7 @@ class FakeCaptionProvider:
         self.calls = []
 
     def describe(self, image, mime_type):
-        from app.services.multimodal_processing import MultimodalResult
+        from app.services.documents.multimodal_processing import MultimodalResult
 
         self.calls.append((image, mime_type))
         return MultimodalResult(f"Caption:{image.decode('utf-8')}", self.name, 0.82)

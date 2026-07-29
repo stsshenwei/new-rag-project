@@ -49,51 +49,51 @@ from app.models.agentic_retrieval import AgenticRetrievalConfig
 from app.models.agent_runtime import DEFAULT_AGENT_RUNTIME_TOOLS, AgentRuntimeConfig
 from app.models.knowledge_base import KnowledgeBaseScope, ProviderReferences
 from app.models.processing_config import DurableProcessingWorkerConfig, ProcessingRuntimeDefaults
-from app.services.agent_prompt_templates import AgentPromptCatalog, ContextPromptCatalog, PromptTemplateCatalog
-from app.services.agent_runtime import AgentRuntime
-from app.services.agent_runtime_spans import AgentRuntimeSpanRepository
-from app.services.agent_runtime_tools import build_default_tool_registry
-from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
-from app.services.agentic_workflow import AgenticRetrievalWorkflow
-from app.services.citation_verifier import CitationVerifier
-from app.services.document_chunker import DocumentChunker
-from app.services.conversation_repository import ConversationRepository
-from app.services.conversation_service import ConversationService
-from app.services.document_parser import PARSER_REGISTRY, RegistryDocumentParser
-from app.services.document_repository import DocumentRepository
-from app.services.document_enrichment import (
+from app.services.agent.agent_prompt_templates import AgentPromptCatalog, ContextPromptCatalog, PromptTemplateCatalog
+from app.services.agent.agent_runtime import AgentRuntime
+from app.services.agent.agent_runtime_spans import AgentRuntimeSpanRepository
+from app.services.agent.agent_runtime_tools import build_default_tool_registry
+from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+from app.services.agent.agentic_workflow import AgenticRetrievalWorkflow
+from app.services.retrieval.citation_verifier import CitationVerifier
+from app.services.documents.document_chunker import DocumentChunker
+from app.services.memory.conversation_repository import ConversationRepository
+from app.services.memory.conversation_service import ConversationService
+from app.services.documents.document_parser import PARSER_REGISTRY, RegistryDocumentParser
+from app.services.documents.document_repository import DocumentRepository
+from app.services.documents.document_enrichment import (
     DocumentEnrichmentService,
     OpenAIDocumentEnrichmentProvider,
     PromptBackedOpenAIDocumentEnrichmentProvider,
 )
-from app.services.embedding_provider import OpenAIEmbeddingProvider
-from app.services.entity_resolver import BaselineEntityResolver
-from app.services.entity_vector_store import MilvusEntityVectorStore
-from app.services.evaluation_dataset_loader import EvaluationDatasetLoader
-from app.services.evaluation_metrics import RuleBasedEvaluationScorer
-from app.services.evaluation_repository import EvaluationRepository
-from app.services.evaluation_reporter import EvaluationReporter
-from app.services.evaluation_runner import EvaluationRunner, EvaluationService
-from app.services.graph_store import Neo4jGraphStore, UnavailableGraphStore
-from app.services.graph_retriever import GraphRetriever
-from app.services.kg_extractor import OpenAIKGExtractor
-from app.services.kg_repository import KGRepository
-from app.services.kg_service import KGEnrichmentService
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService, KnowledgeBaseValidationError
-from app.services.storage_schema import DefaultKnowledgeBaseSettings, StorageResetRequired
-from app.services.storage_reset import clear_runtime_lock, write_runtime_lock
-from app.services.temporary_attachment_repository import TemporaryAttachmentRepository
-from app.services.upload_batch_repository import UploadBatchRepository
-from app.services.memory_repository import MemoryRepository
-from app.services.memory_service import MemoryService
-from app.services.observability import configure_observability_from_env, get_observability_sink, use_observability_trace
-from app.services.processing_trace import ProcessingTraceRecorder
-from app.services.processing_span_tracker import ProcessingSpanRepository, ProcessingSpanTracker
-from app.services.processing_task_repository import ProcessingTaskRepository
-from app.services.processing_worker import DocumentProcessingWorker
-from app.services.runtime_skills import RuntimeSkillsManager
-from app.services.logging_config import (
+from app.services.retrieval.embedding_provider import OpenAIEmbeddingProvider
+from app.services.kg.entity_resolver import BaselineEntityResolver
+from app.services.kg.entity_vector_store import MilvusEntityVectorStore
+from app.services.evaluation.evaluation_dataset_loader import EvaluationDatasetLoader
+from app.services.evaluation.evaluation_metrics import RuleBasedEvaluationScorer
+from app.services.evaluation.evaluation_repository import EvaluationRepository
+from app.services.evaluation.evaluation_reporter import EvaluationReporter
+from app.services.evaluation.evaluation_runner import EvaluationRunner, EvaluationService
+from app.services.kg.graph_store import Neo4jGraphStore, UnavailableGraphStore
+from app.services.kg.graph_retriever import GraphRetriever
+from app.services.kg.kg_extractor import OpenAIKGExtractor
+from app.services.kg.kg_repository import KGRepository
+from app.services.kg.kg_service import KGEnrichmentService
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService, KnowledgeBaseValidationError
+from app.services.storage.storage_schema import DefaultKnowledgeBaseSettings, StorageResetRequired
+from app.services.storage.storage_reset import clear_runtime_lock, write_runtime_lock
+from app.services.documents.temporary_attachment_repository import TemporaryAttachmentRepository
+from app.services.documents.upload_batch_repository import UploadBatchRepository
+from app.services.memory.memory_repository import MemoryRepository
+from app.services.memory.memory_service import MemoryService
+from app.services.infrastructure.observability import configure_observability_from_env, get_observability_sink, use_observability_trace
+from app.services.processing.processing_trace import ProcessingTraceRecorder
+from app.services.processing.processing_span_tracker import ProcessingSpanRepository, ProcessingSpanTracker
+from app.services.processing.processing_task_repository import ProcessingTaskRepository
+from app.services.processing.processing_worker import DocumentProcessingWorker
+from app.services.agent.runtime_skills import RuntimeSkillsManager
+from app.services.infrastructure.logging_config import (
     configure_logging_from_env,
     generate_trace_id,
     get_trace_id,
@@ -103,18 +103,18 @@ from app.services.logging_config import (
     set_trace_id,
     trace_context,
 )
-from app.services.query_router import QueryRouter
-from app.services.query_understanding import (
+from app.services.agent.query_router import QueryRouter
+from app.services.retrieval.query_understanding import (
     OpenAIQueryIntentClient,
     OpenAIQueryRewriteClient,
     QueryUnderstandingConfig,
     QueryUnderstandingService,
 )
-from app.services.rag_service import RAGService
-from app.services.rag_config import load_rag_config
-from app.services.reranker import build_reranker
-from app.services.retrieval_planner import RetrievalPlanner
-from app.services.vector_store import MilvusVectorStore
+from app.services.retrieval.rag_service import RAGService
+from app.services.retrieval.rag_config import load_rag_config
+from app.services.retrieval.reranker import build_reranker
+from app.services.agent.retrieval_planner import RetrievalPlanner
+from app.services.retrieval.vector_store import MilvusVectorStore
 
 load_dotenv()
 configure_logging_from_env()
@@ -653,6 +653,18 @@ def build_rag_service() -> RAGService:
         max_iterations=_get_env_int("AGENT_RUNTIME_MAX_ITERATIONS", default=6),
         max_empty_retries=_get_env_int("AGENT_RUNTIME_MAX_EMPTY_RETRIES", default=2),
         max_repeated_responses=_get_env_int("AGENT_RUNTIME_MAX_REPEATED_RESPONSES", default=2),
+        max_repeated_tool_batches=_get_env_int("AGENT_RUNTIME_MAX_REPEATED_TOOL_BATCHES", default=2),
+        max_llm_calls=_get_env_int("AGENT_RUNTIME_MAX_LLM_CALLS", default=8),
+        max_tool_calls=_get_env_int("AGENT_RUNTIME_MAX_TOOL_CALLS", default=24),
+        max_wall_clock_seconds=_get_env_float("AGENT_RUNTIME_MAX_WALL_CLOCK_SECONDS", default=120.0),
+        max_parallel_workers=_get_env_int("AGENT_RUNTIME_MAX_PARALLEL_WORKERS", default=4),
+        local_concurrency_enabled=_get_env_bool("AGENT_RUNTIME_LOCAL_CONCURRENCY_ENABLED", default=True),
+        parallel_tool_calls_mode=_get_env("AGENT_RUNTIME_PARALLEL_TOOL_CALLS_MODE", default="auto"),
+        terminal_streaming_mode=_get_env("AGENT_RUNTIME_TERMINAL_STREAMING_MODE", default="auto"),
+        legacy_remedial_retrieval_enabled=_get_env_bool(
+            "AGENT_RUNTIME_LEGACY_REMEDIAL_RETRIEVAL_ENABLED",
+            default=False,
+        ),
         max_tool_output_chars=_get_env_int("AGENT_RUNTIME_MAX_TOOL_OUTPUT_CHARS", default=6000),
         max_remedial_retrieval_attempts=_get_env_int("AGENT_REMEDIAL_RETRIEVAL_MAX_ATTEMPTS", default=1),
         reasoning_grep_first_enabled=_get_env_bool("REASONING_LLM_GREP_FIRST_ENABLED", default=True),

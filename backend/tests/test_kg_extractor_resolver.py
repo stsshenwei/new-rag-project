@@ -2,9 +2,9 @@ import unittest
 from types import SimpleNamespace
 
 from app.models.kg_models import Entity
-from app.services.agent_prompt_templates import PromptTemplateCatalog
-from app.services.entity_resolver import BaselineEntityResolver, stable_entity_id
-from app.services.kg_extractor import OpenAIKGExtractor, parse_kg_extraction_payload
+from app.services.agent.agent_prompt_templates import PromptTemplateCatalog
+from app.services.kg.entity_resolver import BaselineEntityResolver, stable_entity_id
+from app.services.kg.kg_extractor import OpenAIKGExtractor, parse_kg_extraction_payload
 
 
 class FakeVectorProvider:

@@ -1,7 +1,7 @@
 import unittest
 
-from app.services.context_builder import ContextBuilder
-from app.services.retrieval_models import RetrievedChunk
+from app.services.retrieval.context_builder import ContextBuilder
+from app.services.retrieval.retrieval_models import RetrievedChunk
 
 
 class FakeRepository:

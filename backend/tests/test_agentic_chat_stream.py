@@ -15,11 +15,11 @@ from tests.test_rag_api_routes import FakeCollection, FakeConversationService, F
 
 def build_workflow(rag=None, graph_retriever=None):
     from app.models.agentic_retrieval import AgenticRetrievalConfig
-    from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
-    from app.services.agentic_workflow import AgenticRetrievalWorkflow
-    from app.services.citation_verifier import CitationVerifier
-    from app.services.query_router import QueryRouter
-    from app.services.retrieval_planner import RetrievalPlanner
+    from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+    from app.services.agent.agentic_workflow import AgenticRetrievalWorkflow
+    from app.services.retrieval.citation_verifier import CitationVerifier
+    from app.services.agent.query_router import QueryRouter
+    from app.services.agent.retrieval_planner import RetrievalPlanner
 
     rag = rag or WorkflowFakeRAGService()
     graph_retriever = graph_retriever or FakeGraphRetriever()
@@ -72,22 +72,68 @@ class FakeAgentRuntime:
         yield AgentRuntimeEvent("agent_query", {"summary": "query", "sequence": 1})
         yield AgentRuntimeEvent("agent_thought", {"summary": "thinking", "sequence": 2})
         yield AgentRuntimeEvent("agent_trace", {"stage": "AgentRuntimeStart", "status": "running", "summary": "start"})
-        yield AgentRuntimeEvent("agent_tool_call", {"tool": "knowledge_search", "input_summary": question, "call_id": "call-1"})
-        yield AgentRuntimeEvent("tool_call", {"tool": "knowledge_search", "input_summary": question})
+        batch_metadata = {"batch_id": "batch-1", "round": 1}
+        yield AgentRuntimeEvent(
+            "agent_tool_call",
+            {
+                "tool": "grep_chunks",
+                "input_summary": "Redis|cache",
+                "call_id": "call-1",
+                "metadata": {**batch_metadata, "call_index": 1},
+            },
+        )
+        yield AgentRuntimeEvent(
+            "tool_call",
+            {"tool": "grep_chunks", "input_summary": "Redis|cache", "call_id": "call-1"},
+        )
+        yield AgentRuntimeEvent(
+            "agent_tool_call",
+            {
+                "tool": "knowledge_search",
+                "input_summary": question,
+                "call_id": "call-2",
+                "metadata": {**batch_metadata, "call_index": 2},
+            },
+        )
+        yield AgentRuntimeEvent(
+            "tool_call",
+            {"tool": "knowledge_search", "input_summary": question, "call_id": "call-2"},
+        )
         yield AgentRuntimeEvent(
             "agent_tool_result",
-            {"tool": "knowledge_search", "status": "completed", "output_summary": "找到 1 条语义候选", "call_id": "call-1"},
+            {
+                "tool": "knowledge_search",
+                "status": "completed",
+                "output_summary": "找到 1 条语义候选",
+                "call_id": "call-2",
+                "metadata": {**batch_metadata, "call_index": 2, "physical_completion_index": 1},
+            },
         )
         yield AgentRuntimeEvent(
             "tool_observation",
-            {"tool": "knowledge_search", "status": "completed", "output_summary": "找到 1 条语义候选"},
+            {"tool": "knowledge_search", "status": "completed", "output_summary": "找到 1 条语义候选", "call_id": "call-2"},
+        )
+        yield AgentRuntimeEvent(
+            "agent_tool_result",
+            {
+                "tool": "grep_chunks",
+                "status": "completed",
+                "output_summary": "找到 1 条关键词候选",
+                "call_id": "call-1",
+                "metadata": {**batch_metadata, "call_index": 1, "physical_completion_index": 2},
+            },
+        )
+        yield AgentRuntimeEvent(
+            "tool_observation",
+            {"tool": "grep_chunks", "status": "completed", "output_summary": "找到 1 条关键词候选", "call_id": "call-1"},
         )
         yield AgentRuntimeEvent("agent_reflection", {"summary": "evidence ok", "completion_status": "sufficient"})
         yield AgentRuntimeEvent("agent_references", {"items": [{"source": "manual.md", "score": 0.9}], "summary": "refs"})
         yield AgentRuntimeEvent("sources", {"items": [{"source": "manual.md", "score": 0.9}]})
         yield AgentRuntimeEvent("evidence_summary", {"sufficient": True, "used_chunks": 1})
         yield AgentRuntimeEvent("agent_final_answer", {"answer": "runtime answer"})
-        yield AgentRuntimeEvent("token", {"token": "runtime answer"})
+        yield AgentRuntimeEvent("token", {"token": "runtime "})
+        yield AgentRuntimeEvent("token", {"token": "answer"})
         yield AgentRuntimeEvent("agent_complete", {"summary": "complete"})
         yield AgentRuntimeEvent("final", {"answer": "runtime answer", "citations": [{"source": "manual.md", "score": 0.9}]})
 
@@ -153,7 +199,7 @@ class AgenticChatStreamRouteTests(unittest.TestCase):
                 **(env or {}),
             }
             with patch.dict(os.environ, full_env, clear=False):
-                with patch("app.services.vector_store._create_or_load_collection", return_value=FakeCollection()):
+                with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=FakeCollection()):
                     return importlib.import_module("app.main")
 
     def test_runtime_config_can_enable_chat_agent_without_rag_query_agent(self):
@@ -237,7 +283,8 @@ class AgenticChatStreamRouteTests(unittest.TestCase):
         self.assertIn('"agent_query"', payload)
         self.assertIn('"agent_references"', payload)
         self.assertIn('"agent_complete"', payload)
-        self.assertIn('"token": "runtime answer"', payload)
+        self.assertIn('"token": "runtime "', payload)
+        self.assertIn('"token": "answer"', payload)
         self.assertEqual([{"question": "What is Redis?", "mode": "quick"}], fake_runtime.calls)
         self.assertEqual([], fake_rag.stream_calls)
 
@@ -269,9 +316,12 @@ class AgenticChatStreamRouteTests(unittest.TestCase):
         self.assertIn('"tool_observation"', payload)
         self.assertIn('"evidence_summary"', payload)
         self.assertIn('"sources"', payload)
-        self.assertIn('"token": "runtime answer"', payload)
+        self.assertIn('"token": "runtime "', payload)
+        self.assertIn('"token": "answer"', payload)
         self.assertIn("[DONE]", payload)
-        self.assertLess(payload.index('"agent_references"'), payload.index('"token": "runtime answer"'))
+        self.assertEqual(2, payload.count('"agent_tool_call"'))
+        self.assertIn('"batch_id": "batch-1"', payload)
+        self.assertLess(payload.index('"agent_references"'), payload.index('"token": "runtime "'))
         self.assertEqual(["user", "assistant"], [message["role"] for message in module.conversation_service.appended])
         self.assertEqual("runtime answer", module.conversation_service.appended[1]["content"])
         self.assertNotIn('"answer": "runtime answer"', payload[payload.index('"final"') :])

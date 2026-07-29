@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from app.services.reranker import DashScopeReranker, NoOpReranker, build_reranker
+from app.services.retrieval.reranker import DashScopeReranker, NoOpReranker, build_reranker
 
 
 class FakeHTTPResponse:

@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.conversation_repository import ConversationRepository
-from app.services.memory_repository import MemoryRepository
+from app.services.memory.conversation_repository import ConversationRepository
+from app.services.memory.memory_repository import MemoryRepository
 
 
 class ConversationRepositoryTests(unittest.TestCase):

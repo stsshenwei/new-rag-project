@@ -6,10 +6,10 @@ from pathlib import Path
 
 from app.models.document_models import Chunk
 from app.models.knowledge_base import ProviderReferences
-from app.services.document_repository import DocumentRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService, KnowledgeBaseValidationError
-from app.services.storage_schema import METADATA_SCHEMA_VERSION, StorageResetRequired
+from app.services.documents.document_repository import DocumentRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService, KnowledgeBaseValidationError
+from app.services.storage.storage_schema import METADATA_SCHEMA_VERSION, StorageResetRequired
 
 
 class KnowledgeBaseRepositoryTests(unittest.TestCase):

@@ -5,9 +5,9 @@ from types import SimpleNamespace
 
 from app.models.document_models import Chunk
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.document_repository import DocumentRepository
-from app.services.rag_service import RAGService
-from app.services.query_understanding import (
+from app.services.documents.document_repository import DocumentRepository
+from app.services.retrieval.rag_service import RAGService
+from app.services.retrieval.query_understanding import (
     QueryUnderstandingConfig,
     QueryUnderstandingService,
 )

@@ -5,11 +5,11 @@ from types import SimpleNamespace
 
 from app.models.document_models import Chunk, ParsedDocument, ParsedElement
 from app.models.kg_models import Entity, KGExtractionResult, Relation
-from app.services.document_chunker import DocumentChunker
-from app.services.document_repository import DocumentRepository
-from app.services.kg_repository import KGRepository
-from app.services.kg_service import KGEnrichmentService
-from app.services.rag_service import RAGService
+from app.services.documents.document_chunker import DocumentChunker
+from app.services.documents.document_repository import DocumentRepository
+from app.services.kg.kg_repository import KGRepository
+from app.services.kg.kg_service import KGEnrichmentService
+from app.services.retrieval.rag_service import RAGService
 
 
 class FakeVectorStore:

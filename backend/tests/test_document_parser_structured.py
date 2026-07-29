@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.document_parser import (
+from app.services.documents.document_parser import (
     BuiltinDocxParser,
     BuiltinExcelParser,
     BuiltinMarkdownParser,

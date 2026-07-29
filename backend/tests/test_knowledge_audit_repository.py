@@ -2,9 +2,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.audit_repository import KnowledgeAuditRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
+from app.services.knowledge.audit_repository import KnowledgeAuditRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
 
 
 class KnowledgeAuditRepositoryTests(unittest.TestCase):

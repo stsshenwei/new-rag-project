@@ -3,7 +3,7 @@ import time
 import unittest
 from pathlib import Path
 
-from app.services.processing_span_tracker import (
+from app.services.processing.processing_span_tracker import (
     SPAN_GENERATION,
     SPAN_SUBSPAN,
     ProcessingSpanRepository,

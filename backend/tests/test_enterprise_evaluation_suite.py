@@ -10,7 +10,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from app.models.document_models import Chunk
-from app.services.document_repository import DocumentRepository
+from app.services.documents.document_repository import DocumentRepository
 
 
 class EnterpriseEvaluationSuiteTests(unittest.TestCase):
@@ -72,7 +72,7 @@ class EnterpriseEvaluationSuiteTests(unittest.TestCase):
 
     def test_repository_persists_runs_results_and_json_fields(self):
         from app.models.evaluation import EvalResultRecord, EvalRunRecord
-        from app.services.evaluation_repository import EvaluationRepository
+        from app.services.evaluation.evaluation_repository import EvaluationRepository
 
         repo = EvaluationRepository(self.temp_path("eval.sqlite3"))
 
@@ -114,7 +114,7 @@ class EnterpriseEvaluationSuiteTests(unittest.TestCase):
         self.assertEqual(["kb-a"], results[0]["knowledge_base_ids"])
 
     def test_dataset_loader_validates_json_yaml_and_path_safety(self):
-        from app.services.evaluation_dataset_loader import EvaluationDatasetLoader
+        from app.services.evaluation.evaluation_dataset_loader import EvaluationDatasetLoader
 
         allowed_root = self.temp_path("evalsets")
         dataset_path = self.write_dataset(allowed_root)
@@ -131,7 +131,7 @@ class EnterpriseEvaluationSuiteTests(unittest.TestCase):
 
     def test_rule_based_scorer_scores_citations_graph_tools_and_uncertainty(self):
         from app.models.evaluation import EvalCase, EvaluationAnswerSnapshot
-        from app.services.evaluation_metrics import NoOpEvaluationJudgeProvider, RuleBasedEvaluationScorer
+        from app.services.evaluation.evaluation_metrics import NoOpEvaluationJudgeProvider, RuleBasedEvaluationScorer
 
         scorer = RuleBasedEvaluationScorer(document_repository=self.make_document_repo(), judge_provider=NoOpEvaluationJudgeProvider())
         case = EvalCase(
@@ -162,11 +162,11 @@ class EnterpriseEvaluationSuiteTests(unittest.TestCase):
         self.assertIn("judge_answer_correctness", scores)
 
     def test_runner_continues_after_case_failure_and_writes_reports(self):
-        from app.services.evaluation_dataset_loader import EvaluationDatasetLoader
-        from app.services.evaluation_metrics import RuleBasedEvaluationScorer
-        from app.services.evaluation_repository import EvaluationRepository
-        from app.services.evaluation_reporter import EvaluationReporter
-        from app.services.evaluation_runner import EvaluationRunner
+        from app.services.evaluation.evaluation_dataset_loader import EvaluationDatasetLoader
+        from app.services.evaluation.evaluation_metrics import RuleBasedEvaluationScorer
+        from app.services.evaluation.evaluation_repository import EvaluationRepository
+        from app.services.evaluation.evaluation_reporter import EvaluationReporter
+        from app.services.evaluation.evaluation_runner import EvaluationRunner
 
         class FakeRAG:
             def answer_query(self, question, top_k=None, filters=None):
@@ -212,8 +212,8 @@ class EnterpriseEvaluationSuiteTests(unittest.TestCase):
 
     def test_reporter_compares_runs_against_baseline(self):
         from app.models.evaluation import EvalResultRecord
-        from app.services.evaluation_repository import EvaluationRepository
-        from app.services.evaluation_reporter import EvaluationReporter
+        from app.services.evaluation.evaluation_repository import EvaluationRepository
+        from app.services.evaluation.evaluation_reporter import EvaluationReporter
 
         repo = EvaluationRepository(self.temp_path("eval.sqlite3"))
         baseline = repo.create_run("enterprise-smoke", "2026.07", "baseline.json")
@@ -273,7 +273,7 @@ class EnterpriseEvaluationSuiteTests(unittest.TestCase):
                 "AUTO_INGEST_ON_STARTUP": "false",
             }
             with patch.dict(os.environ, env, clear=False):
-                with patch("app.services.vector_store._create_or_load_collection", return_value=object()):
+                with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=object()):
                     module = importlib.import_module("app.main")
 
         fake = FakeEvaluationService()

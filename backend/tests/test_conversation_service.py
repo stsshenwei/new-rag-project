@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app.services.conversation_repository import ConversationRepository
-from app.services.conversation_service import ConversationService
+from app.services.memory.conversation_repository import ConversationRepository
+from app.services.memory.conversation_service import ConversationService
 
 
 class FakeSummarizer:

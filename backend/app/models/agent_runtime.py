@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Any, Callable
 from uuid import uuid4
 
@@ -60,6 +61,15 @@ class AgentRuntimeConfig:
     max_iterations: int = 6
     max_empty_retries: int = 2
     max_repeated_responses: int = 2
+    max_repeated_tool_batches: int = 2
+    max_llm_calls: int = 8
+    max_tool_calls: int = 24
+    max_wall_clock_seconds: float = 120.0
+    max_parallel_workers: int = 4
+    local_concurrency_enabled: bool = True
+    parallel_tool_calls_mode: str = "auto"
+    terminal_streaming_mode: str = "auto"
+    legacy_remedial_retrieval_enabled: bool = False
     max_tool_output_chars: int = 6000
     max_remedial_retrieval_attempts: int = 1
     reasoning_grep_first_enabled: bool = True
@@ -94,6 +104,14 @@ class ChatRuntimePolicy:
     max_iterations: int = 1
     max_empty_retries: int = 0
     max_repeated_responses: int = 0
+    max_repeated_tool_batches: int = 0
+    max_llm_calls: int = 1
+    max_tool_calls: int = 0
+    max_wall_clock_seconds: float = 120.0
+    max_parallel_workers: int = 1
+    local_concurrency_enabled: bool = False
+    parallel_tool_calls_mode: str = "off"
+    terminal_streaming_mode: str = "off"
     max_remedial_retrieval_attempts: int = 0
     tool_choice: str = "none"
     preload_retrieval: bool = False
@@ -118,6 +136,14 @@ def resolve_chat_runtime_policy(mode: str, config: AgentRuntimeConfig) -> ChatRu
             max_iterations=max(1, int(config.quick_max_iterations or 1)),
             max_empty_retries=max(0, int(config.quick_max_empty_retries or 0)),
             max_repeated_responses=max(0, int(config.quick_max_repeated_responses or 0)),
+            max_repeated_tool_batches=0,
+            max_llm_calls=max(1, int(config.max_llm_calls or 1)),
+            max_tool_calls=max(0, int(config.max_tool_calls or 0)),
+            max_wall_clock_seconds=max(1.0, float(config.max_wall_clock_seconds or 120.0)),
+            max_parallel_workers=1,
+            local_concurrency_enabled=False,
+            parallel_tool_calls_mode="off",
+            terminal_streaming_mode=_capability_mode(config.terminal_streaming_mode),
             max_remedial_retrieval_attempts=max(0, int(config.max_remedial_retrieval_attempts if config.quick_remedial_retrieval_enabled else 0)),
             tool_choice="auto" if config.quick_enabled_tools else "none",
             preload_retrieval=bool(config.quick_preload_retrieval),
@@ -134,14 +160,55 @@ def resolve_chat_runtime_policy(mode: str, config: AgentRuntimeConfig) -> ChatRu
         max_iterations=max(1, int(config.max_iterations or 1)),
         max_empty_retries=max(0, int(config.max_empty_retries or 0)),
         max_repeated_responses=max(0, int(config.max_repeated_responses or 0)),
-        max_remedial_retrieval_attempts=max(0, int(config.max_remedial_retrieval_attempts or 0)),
+        max_repeated_tool_batches=max(1, int(config.max_repeated_tool_batches or 1)),
+        max_llm_calls=max(1, int(config.max_llm_calls or (config.max_iterations + 2))),
+        max_tool_calls=max(1, int(config.max_tool_calls or 1)),
+        max_wall_clock_seconds=max(1.0, float(config.max_wall_clock_seconds or 120.0)),
+        max_parallel_workers=max(1, int(config.max_parallel_workers or 1)),
+        local_concurrency_enabled=bool(config.local_concurrency_enabled),
+        parallel_tool_calls_mode=_capability_mode(config.parallel_tool_calls_mode),
+        terminal_streaming_mode=_capability_mode(config.terminal_streaming_mode),
+        max_remedial_retrieval_attempts=max(
+            0,
+            int(config.max_remedial_retrieval_attempts or 0)
+            if config.legacy_remedial_retrieval_enabled
+            else 0,
+        ),
         tool_choice="auto" if config.enabled_tools else "none",
         preload_retrieval=False,
-        remedial_retrieval_enabled=bool(config.max_remedial_retrieval_attempts),
+        remedial_retrieval_enabled=bool(
+            config.legacy_remedial_retrieval_enabled and config.max_remedial_retrieval_attempts
+        ),
         require_deep_read=True,
         grep_first_enabled=bool(config.reasoning_grep_first_enabled),
         emit_initial_thought=True,
     )
+
+
+class ToolExecutionClass(str, Enum):
+    PARALLEL_SAFE = "parallel_safe"
+    SERIAL = "serial"
+    EXCLUSIVE = "exclusive"
+
+
+@dataclass(frozen=True)
+class RuntimeToolError:
+    code: str
+    message: str
+    fatal: bool = False
+    retryable: bool = False
+
+
+@dataclass
+class RuntimeStateDelta:
+    candidate_ids: list[str] = field(default_factory=list)
+    deep_read_ids: list[str] = field(default_factory=list)
+    source_titles: list[str] = field(default_factory=list)
+    flags: dict[str, bool] = field(default_factory=dict)
+    counters: dict[str, int] = field(default_factory=dict)
+    append_values: dict[str, list[Any]] = field(default_factory=dict)
+    replace_values: dict[str, Any] = field(default_factory=dict)
+    debug: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -155,11 +222,89 @@ class RuntimeToolResult:
     source_titles: list[str] = field(default_factory=list)
     candidate_ids: list[str] = field(default_factory=list)
     deep_read: bool = False
+    state_delta: RuntimeStateDelta = field(default_factory=RuntimeStateDelta)
+    structured_error: RuntimeToolError | None = None
+    debug: dict[str, Any] = field(default_factory=dict)
 
     def to_observation_text(self) -> str:
         if self.success:
             return self.output or self.observation or "Tool completed."
         return self.error or self.observation or "Tool failed."
+
+
+@dataclass(frozen=True)
+class ActionToolCall:
+    index: int
+    call_id: str
+    tool_name: str
+    arguments: dict[str, Any]
+    execution_class: ToolExecutionClass
+    validation_error: RuntimeToolError | None = None
+
+
+@dataclass(frozen=True)
+class ActionBatch:
+    batch_id: str
+    round_number: int
+    calls: tuple[ActionToolCall, ...]
+
+
+@dataclass
+class ActionToolExecution:
+    call: ActionToolCall
+    result: RuntimeToolResult
+    queued_at: float
+    started_at: float
+    finished_at: float
+
+    @property
+    def queue_ms(self) -> int:
+        return max(0, int((self.started_at - self.queued_at) * 1000))
+
+    @property
+    def duration_ms(self) -> int:
+        return max(0, int((self.finished_at - self.started_at) * 1000))
+
+
+def apply_runtime_state_delta(state: dict[str, Any], delta: RuntimeStateDelta) -> None:
+    if delta.candidate_ids:
+        state["previous_candidate_ids"] = _ordered_union(
+            state.get("previous_candidate_ids"),
+            state.get("search_candidate_ids"),
+        )
+        state["search_candidate_ids"] = _ordered_union(
+            state.get("search_candidate_ids"),
+            delta.candidate_ids,
+        )
+    if delta.deep_read_ids:
+        state["previous_deep_read_ids"] = _ordered_union(
+            state.get("previous_deep_read_ids"),
+            state.get("deep_read_ids"),
+        )
+        state["deep_read_ids"] = _ordered_union(
+            state.get("deep_read_ids"),
+            delta.deep_read_ids,
+        )
+    if delta.source_titles:
+        sources = list(state.get("sources") or [])
+        seen = {str(item.get("source") or "") for item in sources if isinstance(item, dict)}
+        for title in delta.source_titles:
+            if title and title not in seen:
+                sources.append({"source": title, "score": 0.0})
+                seen.add(title)
+        state["sources"] = sources
+    for key, value in delta.flags.items():
+        state[key] = bool(state.get(key)) or bool(value)
+    for key, value in delta.counters.items():
+        state[key] = int(state.get(key) or 0) + int(value)
+    for key, values in delta.append_values.items():
+        current = list(state.get(key) or [])
+        current.extend(values)
+        state[key] = current
+    for key, value in delta.replace_values.items():
+        state[key] = value
+    if delta.debug:
+        state.setdefault("tool_debug", []).append(dict(delta.debug))
 
 
 @dataclass
@@ -302,3 +447,23 @@ def scrub_private_fields(value: Any) -> Any:
     if isinstance(value, list):
         return [scrub_private_fields(item) for item in value]
     return value
+
+
+def _ordered_union(*values: Any) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if value is None:
+            continue
+        items = value if isinstance(value, (list, tuple, set)) else [value]
+        for item in items:
+            text = str(item or "")
+            if text and text not in seen:
+                result.append(text)
+                seen.add(text)
+    return result
+
+
+def _capability_mode(value: str) -> str:
+    normalized = str(value or "auto").strip().lower()
+    return normalized if normalized in {"auto", "on", "off"} else "auto"

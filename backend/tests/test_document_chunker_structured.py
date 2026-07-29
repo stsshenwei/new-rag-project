@@ -1,7 +1,7 @@
 import unittest
 
 from app.models.document_models import ParsedDocument, ParsedElement
-from app.services.document_chunker import DocumentChunker
+from app.services.documents.document_chunker import DocumentChunker
 
 
 def element(idx, type_, text, title_path, level=None, markdown=None, html="", page=1, metadata=None):

@@ -3,10 +3,10 @@ import unittest
 from pathlib import Path
 
 from app.models.processing_config import DurableProcessingWorkerConfig
-from app.services.document_repository import DocumentRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
-from app.services.processing_task_repository import (
+from app.services.documents.document_repository import DocumentRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
+from app.services.processing.processing_task_repository import (
     TASK_CANCELED,
     TASK_COMPLETED,
     TASK_DEAD_LETTERED,
@@ -14,10 +14,10 @@ from app.services.processing_task_repository import (
     TASK_RETRYING,
     ProcessingTaskRepository,
 )
-from app.services.processing_span_tracker import ProcessingSpanRepository, ProcessingSpanTracker
-from app.services.processing_trace import ProcessingTraceRecorder
-from app.services.processing_worker import DocumentProcessingWorker, drain_worker
-from app.services.document_parser import stable_doc_id
+from app.services.processing.processing_span_tracker import ProcessingSpanRepository, ProcessingSpanTracker
+from app.services.processing.processing_trace import ProcessingTraceRecorder
+from app.services.processing.processing_worker import DocumentProcessingWorker, drain_worker
+from app.services.documents.document_parser import stable_doc_id
 from tests.test_rag_service_structured_ingest import FakeParser, FakeVectorStore, make_service
 
 

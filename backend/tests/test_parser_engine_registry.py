@@ -5,7 +5,7 @@ import types
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from app.services.document_parser import (
+from app.services.documents.document_parser import (
     BuiltinDocxParser,
     BuiltinExcelParser,
     BuiltinMarkdownParser,

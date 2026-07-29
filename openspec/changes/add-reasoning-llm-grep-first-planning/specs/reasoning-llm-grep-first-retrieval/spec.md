@@ -26,6 +26,10 @@ The reasoning prompt and tool schema SHALL instruct the model to use its paramet
 - **WHEN** the model generates a synonym or English alias in `grep_chunks` arguments
 - **THEN** the final answer MUST NOT treat that generated term as evidence unless a retrieved and deep-read knowledge-base chunk supports the factual claim
 
+#### Scenario: Synonyms are packed into one grep call
+- **WHEN** one search objective has several synonymous or equivalent keyword anchors
+- **THEN** the model-facing policy MUST instruct the model to select the 2-3 highest-value terms, join them into one simple `term1|term2|term3` alternation query, and issue one `grep_chunks` call instead of separate calls for each term
+
 ### Requirement: GrepChunks Supports Structured Multi-Query Arguments
 The `grep_chunks` runtime tool SHALL accept structured multi-query arguments in addition to the existing single `query` string and SHALL normalize both forms into bounded executable keyword searches.
 
@@ -61,7 +65,7 @@ The `progressive_rag_agent` prompt SHALL be optimized around an adapted Assess-R
 
 #### Scenario: Prompt includes first retrieval discipline
 - **WHEN** the prompt template is rendered for reasoning mode
-- **THEN** it MUST tell the model that KB factual retrieval starts with `grep_chunks`, followed by semantic expansion when needed and mandatory deep reading before final synthesis
+- **THEN** it MUST use the Assess-Reconnaissance-Plan-Execute cycle, perform `grep_chunks` keyword anchoring plus `knowledge_search` semantic reconnaissance in Phase 1, require full-content Deep Read, execute complex evidence tasks sequentially, and end with a tool-free final synthesis
 
 #### Scenario: Prompt preserves Bee identity and project constraints
 - **WHEN** the prompt template is updated from the Weknora reference

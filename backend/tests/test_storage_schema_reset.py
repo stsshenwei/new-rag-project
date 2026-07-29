@@ -8,7 +8,7 @@ from pathlib import Path
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
-from app.services.storage_reset import (
+from app.services.storage.storage_reset import (
     KnowledgeStorageResetCoordinator,
     ManagedFilesResetProvider,
     MilvusCollectionsResetProvider,
@@ -17,7 +17,7 @@ from app.services.storage_reset import (
     ResetPlanItem,
     SQLiteStorageResetProvider,
 )
-from app.services.storage_schema import (
+from app.services.storage.storage_schema import (
     METADATA_SCHEMA_VERSION,
     StorageResetRequired,
     initialize_evaluation_database,
@@ -385,8 +385,8 @@ class StorageSchemaResetTests(unittest.TestCase):
         self.assertEqual({"dropped": ["entity", "rag"]}, provider.reset())
         rag = FakeCollection()
         entity = FakeCollection()
-        with patch("app.services.vector_store._create_or_load_collection", return_value=rag), patch(
-            "app.services.entity_vector_store._create_or_load_entity_collection", return_value=entity
+        with patch("app.services.retrieval.vector_store._create_or_load_collection", return_value=rag), patch(
+            "app.services.kg.entity_vector_store._create_or_load_entity_collection", return_value=entity
         ):
             initialized = provider.initialize()
         self.assertEqual(["rag", "entity"], initialized["created"])

@@ -98,7 +98,7 @@ class FakeGraphRetriever(EmptyGraphRetriever):
 class AgenticToolsWorkflowTests(unittest.TestCase):
     def test_tools_return_traceable_evidence_without_generating_answers(self):
         from app.models.agentic_retrieval import PlannedTool
-        from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+        from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
 
         rag = FakeRAGService()
         raw_result = RawRAGTool(rag).run("What is Redis?", PlannedTool(name="RawRAGTool"))
@@ -116,11 +116,11 @@ class AgenticToolsWorkflowTests(unittest.TestCase):
 
     def test_workflow_runs_states_and_returns_enterprise_fact_response(self):
         from app.models.agentic_retrieval import AgenticRetrievalConfig
-        from app.services.agentic_workflow import AgenticRetrievalWorkflow
-        from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
-        from app.services.citation_verifier import CitationVerifier
-        from app.services.query_router import QueryRouter
-        from app.services.retrieval_planner import RetrievalPlanner
+        from app.services.agent.agentic_workflow import AgenticRetrievalWorkflow
+        from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+        from app.services.retrieval.citation_verifier import CitationVerifier
+        from app.services.agent.query_router import QueryRouter
+        from app.services.agent.retrieval_planner import RetrievalPlanner
 
         rag = FakeRAGService()
         workflow = AgenticRetrievalWorkflow(
@@ -162,11 +162,11 @@ class AgenticToolsWorkflowTests(unittest.TestCase):
 
     def test_dependency_without_graph_path_returns_explicit_uncertainty(self):
         from app.models.agentic_retrieval import AgenticRetrievalConfig
-        from app.services.agentic_workflow import AgenticRetrievalWorkflow
-        from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
-        from app.services.citation_verifier import CitationVerifier
-        from app.services.query_router import QueryRouter
-        from app.services.retrieval_planner import RetrievalPlanner
+        from app.services.agent.agentic_workflow import AgenticRetrievalWorkflow
+        from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+        from app.services.retrieval.citation_verifier import CitationVerifier
+        from app.services.agent.query_router import QueryRouter
+        from app.services.agent.retrieval_planner import RetrievalPlanner
 
         rag = FakeRAGService()
         workflow = AgenticRetrievalWorkflow(
@@ -189,11 +189,11 @@ class AgenticToolsWorkflowTests(unittest.TestCase):
 
     def test_source_question_uses_raw_only_and_troubleshooting_uses_three_tools(self):
         from app.models.agentic_retrieval import AgenticRetrievalConfig
-        from app.services.agentic_workflow import AgenticRetrievalWorkflow
-        from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
-        from app.services.citation_verifier import CitationVerifier
-        from app.services.query_router import QueryRouter
-        from app.services.retrieval_planner import RetrievalPlanner
+        from app.services.agent.agentic_workflow import AgenticRetrievalWorkflow
+        from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+        from app.services.retrieval.citation_verifier import CitationVerifier
+        from app.services.agent.query_router import QueryRouter
+        from app.services.agent.retrieval_planner import RetrievalPlanner
 
         rag = FakeRAGService()
         workflow = AgenticRetrievalWorkflow(
@@ -220,11 +220,11 @@ class AgenticToolsWorkflowTests(unittest.TestCase):
 
     def test_invalid_answer_citation_downgrades_fact_response(self):
         from app.models.agentic_retrieval import AgenticRetrievalConfig
-        from app.services.agentic_workflow import AgenticRetrievalWorkflow
-        from app.services.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
-        from app.services.citation_verifier import CitationVerifier
-        from app.services.query_router import QueryRouter
-        from app.services.retrieval_planner import RetrievalPlanner
+        from app.services.agent.agentic_workflow import AgenticRetrievalWorkflow
+        from app.services.agent.agent_tools import GraphRetrieverTool, KeywordSearchTool, RawRAGTool
+        from app.services.retrieval.citation_verifier import CitationVerifier
+        from app.services.agent.query_router import QueryRouter
+        from app.services.agent.retrieval_planner import RetrievalPlanner
 
         rag = InvalidCitationRAGService(valid_chunk_ids={"c1"})
         workflow = AgenticRetrievalWorkflow(
@@ -246,7 +246,7 @@ class AgenticToolsWorkflowTests(unittest.TestCase):
         self.assertLess(result["confidence"], 0.5)
 
     def test_citation_verifier_blocks_invalid_citations_and_graph_sources(self):
-        from app.services.citation_verifier import CitationVerifier
+        from app.services.retrieval.citation_verifier import CitationVerifier
 
         verifier = CitationVerifier(FakeDocumentRepository(valid_chunk_ids={"c1"}))
         result = verifier.verify(

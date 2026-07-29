@@ -245,7 +245,7 @@ test("new timeline activity closes previous non-tool running steps while streami
     normalizeAgentPayload("agent_thought", { status: "running", phase: "initial_scan", summary: "thinking" }, 2, 1100),
     normalizeAgentPayload("agent_trace", { stage: "AgentRuntimeStart", status: "running", summary: "start" }, 3, 1200),
     normalizeAgentPayload("agent_trace", { stage: "AgentRound", status: "running", summary: "round" }, 4, 1300),
-    normalizeAgentPayload("agent_tool_call", { tool: "grep_chunks", call_id: "g1", input_summary: "4 query variants" }, 5, 1400),
+    normalizeAgentPayload("agent_tool_call", { tool: "grep_chunks", call_id: "g1", input_summary: "grep_chunks: 48*SFP+ | 40G QSFP+ | 4.8T | VLAN:4K" }, 5, 1400),
   ];
 
   const steps = buildAgentTimeline(events);
@@ -254,6 +254,56 @@ test("new timeline activity closes previous non-tool running steps while streami
 
   assert.equal(nonToolRunning.length, 0);
   assert.equal(toolStep?.status, "running");
+  assert.equal(toolStep?.title, "搜索关键词：48*SFP+ | 40G QSFP+ | 4.8T | VLAN:4K");
+});
+
+test("batched tools complete by call id even when physical results arrive out of order", () => {
+  const events = [
+    normalizeAgentPayload(
+      "agent_thought",
+      {
+        status: "running",
+        phase: "llm_decision",
+        summary: "Analyzing the question and selecting the next action.",
+        metadata: { source: "runtime_phase" },
+      },
+      1,
+      1000,
+    ),
+    normalizeAgentPayload(
+      "agent_tool_call",
+      { tool: "grep_chunks", call_id: "g1", metadata: { batch_id: "b1", call_index: 1 } },
+      2,
+      1100,
+    ),
+    normalizeAgentPayload(
+      "agent_tool_call",
+      { tool: "knowledge_search", call_id: "s1", metadata: { batch_id: "b1", call_index: 2 } },
+      3,
+      1110,
+    ),
+    normalizeAgentPayload(
+      "agent_tool_result",
+      { tool: "knowledge_search", call_id: "s1", output_summary: "semantic done", metadata: { batch_id: "b1", call_index: 2 } },
+      4,
+      1160,
+    ),
+    normalizeAgentPayload(
+      "agent_tool_result",
+      { tool: "grep_chunks", call_id: "g1", output_summary: "grep done", metadata: { batch_id: "b1", call_index: 1 } },
+      5,
+      1200,
+    ),
+    normalizeAgentPayload("agent_complete", { summary: "complete" }, 6, 1250),
+  ];
+
+  const steps = buildAgentTimeline(events);
+  const tools = steps.filter((step) => step.kind === "tool");
+
+  assert.deepEqual(tools.map((step) => step.tool), ["grep_chunks", "knowledge_search"]);
+  assert.deepEqual(tools.map((step) => step.status), ["completed", "completed"]);
+  assert.equal(steps.some((step) => step.status === "running"), false);
+  assert.equal(events[0].metadata.metadata.source, "runtime_phase");
 });
 
 test("visible labels are user-facing and do not include private internal strings", () => {

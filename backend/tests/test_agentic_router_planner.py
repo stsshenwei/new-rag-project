@@ -33,7 +33,7 @@ class AgenticModelsRouterPlannerTests(unittest.TestCase):
         self.assertEqual(TOOL_GRAPH_RETRIEVER, TOOL_GRAPH_RETRIEVER)
 
     def test_query_router_classifies_supported_question_types_and_fallback(self):
-        from app.services.query_router import QueryRouter
+        from app.services.agent.query_router import QueryRouter
 
         router = QueryRouter()
         cases = {
@@ -60,7 +60,7 @@ class AgenticModelsRouterPlannerTests(unittest.TestCase):
 
     def test_retrieval_planner_uses_only_approved_tools_and_required_graph_rules(self):
         from app.models.agentic_retrieval import TOOL_GRAPH_RETRIEVER, TOOL_KEYWORD_SEARCH, TOOL_RAW_RAG, QueryRoute
-        from app.services.retrieval_planner import RetrievalPlanner
+        from app.services.agent.retrieval_planner import RetrievalPlanner
 
         planner = RetrievalPlanner()
 

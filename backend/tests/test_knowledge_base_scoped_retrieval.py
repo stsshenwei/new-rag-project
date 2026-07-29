@@ -4,11 +4,11 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from app.models.document_models import Chunk
-from app.services.citation_verifier import CitationVerifier
-from app.services.document_repository import DocumentRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
-from app.services.rag_service import RAGService
+from app.services.retrieval.citation_verifier import CitationVerifier
+from app.services.documents.document_repository import DocumentRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
+from app.services.retrieval.rag_service import RAGService
 
 
 class ScopedVectorStore:

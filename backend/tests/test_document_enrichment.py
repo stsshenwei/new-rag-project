@@ -4,16 +4,16 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from app.models.document_models import Chunk
-from app.services.document_enrichment import (
+from app.services.documents.document_enrichment import (
     DocumentEnrichmentResult,
     DocumentEnrichmentService,
     OpenAIDocumentEnrichmentProvider,
     PromptBackedOpenAIDocumentEnrichmentProvider,
 )
-from app.services.agent_prompt_templates import PromptTemplateCatalog
-from app.services.document_repository import DocumentRepository
-from app.services.knowledge_base_repository import KnowledgeBaseRepository
-from app.services.knowledge_base_service import KnowledgeBaseService
+from app.services.agent.agent_prompt_templates import PromptTemplateCatalog
+from app.services.documents.document_repository import DocumentRepository
+from app.services.knowledge.knowledge_base_repository import KnowledgeBaseRepository
+from app.services.knowledge.knowledge_base_service import KnowledgeBaseService
 
 
 class FakeProvider:

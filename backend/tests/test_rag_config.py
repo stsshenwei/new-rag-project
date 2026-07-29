@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from app.services.rag_config import load_rag_config
+from app.services.retrieval.rag_config import load_rag_config
 
 
 class RagConfigTests(unittest.TestCase):

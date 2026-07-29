@@ -1,14 +1,14 @@
 import json
 import unittest
 
-from app.services.query_understanding import (
+from app.services.retrieval.query_understanding import (
     OpenAIQueryIntentClient,
     OpenAIQueryRewriteClient,
     QueryUnderstandingConfig,
     QueryUnderstandingResult,
     QueryUnderstandingService,
 )
-from app.services.agent_prompt_templates import PromptTemplateCatalog
+from app.services.agent.agent_prompt_templates import PromptTemplateCatalog
 
 
 class FakeRewriteClient:

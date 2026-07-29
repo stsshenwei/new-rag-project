@@ -7,11 +7,11 @@ from pathlib import Path
 
 from app.models.agent_runtime import AgentEventBus, AgentRuntimeConfig, AgentRuntimeEvent, agent_event, resolve_chat_runtime_policy
 from app.models.knowledge_base import KnowledgeBaseScope
-from app.services.agent_prompt_templates import AgentPromptCatalog
-from app.services.agent_runtime import AgentRuntime
-from app.services.agent_runtime_spans import AgentRuntimeSpanRepository
-from app.services.agent_runtime_tools import build_default_tool_registry
-from app.services.observability import NoopObservabilitySink, ObservationHandle, ObservabilitySink, set_observability_sink
+from app.services.agent.agent_prompt_templates import AgentPromptCatalog
+from app.services.agent.agent_runtime import AgentRuntime, _input_summary, _question_needs_exact_grep_anchor
+from app.services.agent.agent_runtime_spans import AgentRuntimeSpanRepository
+from app.services.agent.agent_runtime_tools import build_default_tool_registry
+from app.services.infrastructure.observability import NoopObservabilitySink, ObservationHandle, ObservabilitySink, set_observability_sink
 
 
 class FakeMessage:
@@ -512,7 +512,7 @@ class AgentRuntimeLoopTests(unittest.TestCase):
         runtime = build_runtime()
         rag = runtime.rag_service
 
-        with self.assertLogs("app.services.agent_runtime", level="INFO") as captured:
+        with self.assertLogs("app.services.agent.agent_runtime", level="INFO") as captured:
             events = list(runtime.stream_query_events("What uses Redis?", scope=rag.default_scope))
 
         trace_stages = [event.payload.get("stage") for event in events if event.event_type == "agent_trace"]
@@ -531,9 +531,10 @@ class AgentRuntimeLoopTests(unittest.TestCase):
             any(record.getMessage() == "agent_runtime.trace" and hasattr(record, "trace_id") for record in captured.records)
         )
 
-    def test_reasoning_factual_question_requires_grep_first_before_final_answer(self):
+    def test_reasoning_model_decides_retrieval_without_lexical_forced_grep(self):
+        completions = SkipsGrepThenCorrectsCompletions()
         runtime = build_runtime(
-            completions=SkipsGrepThenCorrectsCompletions(),
+            completions=completions,
             enabled_tools=("grep_chunks", "knowledge_search", "list_knowledge_chunks"),
         )
         runtime.config.max_iterations = 5
@@ -543,9 +544,31 @@ class AgentRuntimeLoopTests(unittest.TestCase):
         tool_names = [event.payload.get("tool") for event in events if event.event_type == "agent_tool_call"]
         final = [event for event in events if event.event_type == "final"][-1]
 
-        self.assertIn("RequireGrepFirst", stages)
-        self.assertIn("grep_chunks", tool_names)
+        self.assertNotIn("RequireGrepFirst", stages)
+        self.assertEqual([], tool_names)
+        self.assertEqual(1, completions.calls)
         self.assertEqual("Redis is used by API Gateway.", final.payload["answer"])
+
+    def test_exact_grep_anchor_detection_keeps_semantic_questions_autonomous(self):
+        self.assertFalse(_question_needs_exact_grep_anchor("风控系统架构是什么"))
+        self.assertTrue(
+            _question_needs_exact_grep_anchor("48*SFP+ 光口 4.8T 40GE VLAN:4K MAC:128K")
+        )
+
+    def test_grep_query_variants_are_shown_with_pipe_separator(self):
+        summary = _input_summary(
+            "grep_chunks",
+            {
+                "queries": [
+                    "48*SFP+",
+                    "40G QSFP+",
+                    "4.8T",
+                    "VLAN:4K",
+                ]
+            },
+        )
+
+        self.assertEqual("grep_chunks: 48*SFP+ | 40G QSFP+ | 4.8T | VLAN:4K", summary)
 
     def test_reasoning_grep_candidates_still_require_deep_read(self):
         runtime = build_runtime(
@@ -595,6 +618,7 @@ class AgentRuntimeLoopTests(unittest.TestCase):
             completions=RemedialCompletions(),
             enabled_tools=("thinking", "knowledge_search", "list_knowledge_chunks"),
         )
+        runtime.config.legacy_remedial_retrieval_enabled = True
 
         events = list(runtime.stream_query_events("Which Redis version?", scope=runtime.rag_service.default_scope))
         event_types = [event.event_type for event in events]
@@ -665,6 +689,7 @@ class AgentRuntimeLoopTests(unittest.TestCase):
             completions=DuplicateRemedialCompletions(),
             enabled_tools=("thinking", "knowledge_search", "list_knowledge_chunks"),
         )
+        runtime.config.legacy_remedial_retrieval_enabled = True
 
         events = list(runtime.stream_query_events("Which Redis version?", scope=runtime.rag_service.default_scope))
         tool_calls = [event.payload for event in events if event.event_type == "agent_tool_call"]

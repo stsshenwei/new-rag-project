@@ -136,9 +136,9 @@ Provide a single backend service that can:
 ## Owning Files
 
 - `backend/app/main.py`
-- `backend/app/services/rag_service.py`
-- `backend/app/services/vector_store.py`
-- `backend/app/services/document_loader.py`
+- `backend/app/services/retrieval/rag_service.py`
+- `backend/app/services/retrieval/vector_store.py`
+- `backend/app/services/documents/document_loader.py`
 
 ## Design Shape
 
@@ -156,7 +156,7 @@ Provide a single backend service that can:
 8. optional agentic retrieval orchestration for `/rag/query` and `/chat/stream`
 9. optional enterprise evaluation replay through the query service
 
-Evidence: `backend/app/services/rag_service.py:44-300`.
+Evidence: `backend/app/services/retrieval/rag_service.py:44-300`.
 
 ## Ingest Strategy
 
@@ -168,7 +168,7 @@ Evidence: `backend/app/services/rag_service.py:44-300`.
 - Parent chunk text is stored in `parent_store.json` under the active vector store directory.
 - Keyword child text is stored in `keyword_index.json` under the active vector store directory.
 
-Evidence: `backend/app/services/document_loader.py:16-21`, `backend/app/services/rag_service.py:84-120`, `backend/app/services/vector_store.py:47-64`.
+Evidence: `backend/app/services/documents/document_loader.py:16-21`, `backend/app/services/retrieval/rag_service.py:84-120`, `backend/app/services/retrieval/vector_store.py:47-64`.
 
 ### Tradeoff
 
@@ -259,7 +259,7 @@ Visible workbuddy-style trace is an audit summary, not hidden chain-of-thought. 
 
 Agentic chat streaming is controlled separately by `CHAT_AGENTIC_WORKFLOW_ENABLED=false`. When enabled, `/chat/stream` uses `AgenticRetrievalWorkflow.stream_query_events()` instead of running Raw RAG directly in the route handler. The SSE order remains compatible:
 
-## Weknora-Style Agent Runtime
+## Autonomous ReAct Agent Runtime
 
 The optional ReAct runtime is controlled by `AGENT_RUNTIME_ENABLED=false`. When enabled, `/chat/stream` reasoning mode prefers `AgentRuntime` before the deterministic `AgenticRetrievalWorkflow`; quick mode still uses the direct retrieval-answer path.
 
@@ -268,11 +268,13 @@ The runtime adds:
 - YAML prompt templates from `config/prompt_templates/agent_system_prompt.yaml`
 - a model-facing `ToolRegistry` with stable function definitions, argument validation, output truncation, and recoverable error observations
 - read-only document tools: `thinking`, `todo_write`, `knowledge_search`, `grep_chunks`, `list_knowledge_chunks`, `get_document_info`, `query_knowledge_graph`, and optional `read_skill`
-- mandatory deep-read enforcement after search tools return candidates
+- model-directed action rounds with mandatory deep-read enforcement after search tools return candidates
 - runtime trace events compatible with the existing agent timeline stream
 - optional read-only runtime skills under `runtime_skills/preloaded`
 
-Wiki tools, web search/fetch, data-analysis SQL tools, and executable skill scripts are intentionally excluded from this runtime slice. The runtime can be rolled back by disabling `AGENT_RUNTIME_ENABLED`, which returns reasoning mode to the existing deterministic workflow.
+The LLM request is the Think phase. A response may answer directly or return one ordered batch containing one or more tool calls. The controller validates the whole batch before execution. Contiguous `parallel_safe` calls may overlap in a bounded thread pool; `serial` and `exclusive` calls form barriers. Every worker receives an immutable context and pre-batch state snapshot. Tools return explicit state deltas, and the controller commits results, model tool messages, sources, and events in the original call order even when physical completion is out of order.
+
+Wiki tools, web search/fetch, data-analysis SQL tools, and executable skill scripts remain feature-gated. The runtime can be rolled back by disabling `AGENT_RUNTIME_ENABLED`, which returns reasoning mode to the existing deterministic workflow.
 
 The runtime now also emits first-class Agent domain events for the Weknora-style reasoning lifecycle:
 
@@ -289,24 +291,30 @@ agent_query
 
 The domain events are additive. `/chat/stream` maps them back to compatible SSE payloads for existing clients: `agent_references` also emits `sources`, `agent_tool_call`/`agent_tool_result` preserve `tool_call`/`tool_observation`, `agent_final_answer` is followed by the existing `token` stream, and `agent_complete` is followed by `[DONE]` at the route layer. Sourced reasoning responses emit references before answer tokens.
 
-Reasoning mode defaults to LLM-driven grep-first retrieval when `REASONING_LLM_GREP_FIRST_ENABLED=true`:
+Reasoning mode uses a Weknora-aligned Assess-Reconnaissance-Plan-Execute prompt when `REASONING_LLM_GREP_FIRST_ENABLED=true`:
 
 ```text
 reasoning question
-  -> model chooses grep_chunks with synonym/alias/action variants in tool arguments
-  -> backend normalizes structured queries or simple alternation strings
-  -> keyword retrieval executes bounded variants and deduplicates candidates
-  -> list_knowledge_chunks or get_document_info deep-reads candidate evidence
-  -> optional knowledge_search expands semantically when exact evidence is partial
-  -> reflection checks gaps and evidence sufficiency
-  -> final answer uses only deep-read evidence
+  -> intent assessment
+  -> Phase 1: grep_chunks + knowledge_search reconnaissance
+  -> mandatory full-content deep read
+  -> Path A: synthesize when evidence is sufficient
+  -> Path B: execute evidence tasks sequentially
+  -> reflect on each task and repair focused gaps
+  -> final synthesis with no further tool calls
 ```
 
-The LLM-generated grep terms are retrieval hints, not answer evidence. If the model tries to answer or use semantic-only retrieval before grep-first on a factual KB question, the runtime emits a public `RequireGrepFirst` trace and asks the model to anchor exact terms first. Quick mode remains bounded by default because `QUICK_LLM_GREP_FIRST_ENABLED=false`.
+The prompt follows Weknora's retrieval discipline but preserves project truth: Bee identity, provider-safe simple alternation instead of PostgreSQL regex guarantees, the actual chunk/document tool schemas, natural source titles instead of unsupported citation tags, and feature-gated Web use. The LLM generates synonyms, aliases, translations, abbreviations, legacy names, model fragments, and equivalent parameter expressions directly inside each tool call. For one search objective, it selects the 2-3 highest-value alternatives and packs them into one simple `term1|term2|term3` query instead of emitting separate `grep_chunks` calls for each synonym. The backend normalizes this simple alternation into provider-safe bounded variants. These generated terms are retrieval hints, not answer evidence. Quick mode remains bounded by default because `QUICK_LLM_GREP_FIRST_ENABLED=false`.
 
 For any multi-constraint filtering, comparison, or recommendation request, reasoning mode asks the LLM to extract all hard constraints, normalize relevant aliases and units as hypotheses, and verify every condition against deep-read evidence for the same candidate or subject. Verified candidates are listed first; a recommendation is added only when the evidence supports meaningful differences.
 
-`thinking` is a public audit tool, not hidden chain-of-thought. It can record `phase`, `summary`, `validity`, `gap`, `correction_query`, `completion_status`, and `source_chunk_ids`. If reflection identifies a repairable gap and `AGENT_REMEDIAL_RETRIEVAL_MAX_ATTEMPTS` permits another attempt, the runtime performs a bounded remedial search, deduplicates already-read chunks, deep-reads newly selected evidence, and then continues to final reflection and answer generation. If the gap remains, the runtime stops with an insufficient-evidence answer rather than continuing the loop.
+`thinking` is an optional public audit tool, not hidden chain-of-thought and not a prerequisite for retrieval. It can record `phase`, `summary`, `validity`, `gap`, `correction_query`, `completion_status`, and `source_chunk_ids`. By default, a gap is returned to the model as an observation and the model chooses the next query, read, tool, or final answer. The old controller-selected remedial path is available only through `AGENT_RUNTIME_LEGACY_REMEDIAL_RETRIEVAL_ENABLED=true`.
+
+Budgets are independent: action rounds, total LLM calls, proposed/executed tool calls, elapsed wall time, and repeated unchanged action signatures are tracked separately. If a limit is reached after qualifying deep reads, one reserved tools-disabled synthesis request produces a grounded answer. Without qualifying evidence, or if synthesis fails, the runtime returns a localized deterministic insufficient-evidence fallback.
+
+Provider adaptation uses `AGENT_RUNTIME_PARALLEL_TOOL_CALLS_MODE` and `AGENT_RUNTIME_TERMINAL_STREAMING_MODE` with `auto`, `on`, or `off`. The runtime retries once without `parallel_tool_calls` on a recognized unsupported-parameter response and caches the result per model. Streamed tool-call deltas are fully assembled before entering history; provisional content and partial arguments are never exposed. References are emitted before terminal answer tokens.
+
+Runtime spans and event metadata include batch/call identity, declared call index, execution class, action-round duration, model latency/first byte, queue time, tool duration, physical completion order, batch wall time, terminal first token, worker limit, budgets, stop reason, and provider compatibility fallback. Local concurrency can be disabled without changing batch semantics or deterministic result order.
 
 ## Quick Answer Trace And Grounded Synthesis
 
@@ -411,7 +419,7 @@ Rule-based metrics are deterministic and CI-friendly:
 
 JSON and Markdown reports are generated from stored run results. Evaluation does not write feedback files, update memory, rebuild vector stores, or modify graph data.
 
-Evidence: `backend/app/services/rag_service.py`, `backend/app/services/vector_store.py`, `backend/app/services/reranker.py`.
+Evidence: `backend/app/services/retrieval/rag_service.py`, `backend/app/services/retrieval/vector_store.py`, `backend/app/services/retrieval/reranker.py`.
 
 ### Tradeoff
 
@@ -426,7 +434,7 @@ RRF avoids fragile score calibration across dense and BM25 search, but the resul
 - For conservative how-to/procedure questions, the user prompt adds answer-style guidance requiring source-grounded Markdown sections, ordered steps, fenced command/config code blocks when commands appear in context, and explicit `无法确定` language when evidence is missing.
 - How-to guidance must not authorize the model to invent unsupported install flags, commands, versions, URLs, or prerequisites.
 
-Evidence: `backend/app/main.py:68-82`, `backend/app/services/rag_service.py:146-154`, `backend/app/services/rag_service.py:280-299`.
+Evidence: `backend/app/main.py:68-82`, `backend/app/services/retrieval/rag_service.py:146-154`, `backend/app/services/retrieval/rag_service.py:280-299`.
 
 ## Feedback Strategy
 
@@ -435,11 +443,11 @@ Evidence: `backend/app/main.py:68-82`, `backend/app/services/rag_service.py:146-
 - That markdown is split into parent-child chunks and upserted immediately.
 - The correction then becomes part of later retrieval results.
 
-Evidence: `backend/app/services/rag_service.py:230-274`.
+Evidence: `backend/app/services/retrieval/rag_service.py:230-274`.
 
 ## File Parsing Strategy
 
-Supported formats currently include text, markdown, HTML, CSV, JSON, DOC, DOCX, Excel, and PDF. Evidence: `backend/app/services/document_loader.py`.
+Supported formats currently include text, markdown, HTML, CSV, JSON, DOC, DOCX, Excel, and PDF. Evidence: `backend/app/services/documents/document_loader.py`.
 
 Notable parser behavior:
 
@@ -452,7 +460,7 @@ Notable parser behavior:
 - PDF prefers `pymupdf4llm` markdown extraction and disables layout mode when available.
 - PDF, Markdown, and HTML chunks preserve markdown header boundaries before recursive splitting where possible.
 
-Evidence: `backend/app/services/document_loader.py:24-45`, `backend/app/services/document_loader.py:48-119`, `backend/app/services/document_loader.py:139-174`.
+Evidence: `backend/app/services/documents/document_loader.py:24-45`, `backend/app/services/documents/document_loader.py:48-119`, `backend/app/services/documents/document_loader.py:139-174`.
 
 ## Constraints For Future Changes
 
